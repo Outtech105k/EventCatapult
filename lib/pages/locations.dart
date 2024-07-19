@@ -11,8 +11,27 @@ class LocationsPage extends StatefulWidget {
 class _LocationsPageState extends State<LocationsPage> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Locations"),
+    return Scaffold(
+      body: const Center(
+        child: Text("Hello"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: "場所の登録",
+        child: const Icon(Icons.add_location),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Scaffold(
+                  appBar: AppBar(
+                    title: const Text("場所の登録"),
+                  ),
+                  body: const Map(),
+                )
+            ),
+          );
+        },
+      ),
     );
   }
 }

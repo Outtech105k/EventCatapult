@@ -23,7 +23,8 @@ class _MapState extends State<Map> {
   Future<void> _fetchLocation() async {
     var locationData = await _location.getLocation();
     setState(() {
-      _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+      _currentPosition =
+          LatLng(locationData.latitude!, locationData.longitude!);
     });
   }
 

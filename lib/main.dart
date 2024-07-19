@@ -20,6 +20,7 @@ class ReminderApp extends StatelessWidget {
         colorSchemeSeed: Colors.blueAccent,
         useMaterial3: true,
         brightness: Brightness.light,
+        fontFamily: 'NotoSansJP',
       ),
       darkTheme: ThemeData(
         colorSchemeSeed: Colors.blueAccent,

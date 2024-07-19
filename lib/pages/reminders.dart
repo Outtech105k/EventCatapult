@@ -10,8 +10,18 @@ class RemindersPage extends StatefulWidget {
 class _RemindersPageState extends State<RemindersPage> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Reminders"),
+    return Center(
+      child: Scaffold(
+        body: const Center(
+          child: Text("Reminders"),
+        ),
+        floatingActionButton: FloatingActionButton(
+          tooltip: "リマインダーを追加",
+          child: const Icon(Icons.add_task),
+          onPressed: () {
+          },
+        ),
+      ),
     );
   }
 }
