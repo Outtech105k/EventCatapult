@@ -1,16 +1,28 @@
 # gps_reminder
 
+**現在開発中です。**
+
+GPS情報と連携して、指定時間までにに目的地への到着を促すことができるリマインダーアプリです。
+
 Reminder / TODO App related location.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+[Flutter](https://flutter.dev)による構築です。Android Studio等でビルドします。
 
-A few resources to get you started if this is your first Flutter project:
+[Google Maps API](https://developers.google.com/maps)を使用しています。
+APIキーを適切な箇所に書き込まないと適切に動作しません。
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Android/Mac/Webに対応予定ですが、ストアへのリリース予定はありません。
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## License
+
+MIT Licenseを適用します。
+
+## Author
+
+Outtech105
+
+[Homepage](https://outtech105.com)
+
+[X](https://x.com/105techno)
