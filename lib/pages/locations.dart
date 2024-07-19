@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'map.dart';
 
 class LocationsPage extends StatefulWidget {
   const LocationsPage({super.key});
