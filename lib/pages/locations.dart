@@ -13,7 +13,7 @@ class _LocationsPageState extends State<LocationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: const Center(
-        child: Text("Hello"),
+        child: Text("Locations"),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: "場所の登録",

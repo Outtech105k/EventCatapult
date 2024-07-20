@@ -30,21 +30,25 @@ class _MapState extends State<Map> {
 
   @override
   Widget build(BuildContext context) {
-    return _currentPosition == null
-        ? const Center(child: CircularProgressIndicator())
-        : GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: _currentPosition!,
-        zoom: 15.0,
-      ),
-      myLocationEnabled: true,
-      myLocationButtonEnabled: true,
-      mapType: MapType.normal,
-      zoomGesturesEnabled: true,
-      zoomControlsEnabled: true,
-      onMapCreated: (GoogleMapController controller) {
-        _controller = controller;
-      },
+    return Stack(
+      children: <Widget>[
+        _currentPosition == null
+            ? const Center(child: CircularProgressIndicator())
+            : GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: _currentPosition!,
+            zoom: 15.0,
+          ),
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+          mapType: MapType.normal,
+          zoomGesturesEnabled: true,
+          zoomControlsEnabled: true,
+          onMapCreated: (GoogleMapController controller) {
+            _controller = controller;
+          },
+        ),
+      ],
     );
   }
 }

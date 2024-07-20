@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'pages/reminders.dart';
 import 'pages/locations.dart';
 import 'pages/settings.dart';
-import 'gps/location.dart';
+import 'services/location.dart';
 
 void main() {
   runApp(const ReminderApp());
