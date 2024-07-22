@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'pages/reminders.dart';
 import 'pages/locations.dart';
-import 'pages/settings.dart';
 import 'services/location.dart';
+import 'database/reminds.dart';
 
 void main() {
-  runApp(const ReminderApp());
+  final database = AppDatabase();
+  runApp(ReminderApp(database: database));
 }
 
 class ReminderApp extends StatelessWidget {
-  const ReminderApp({super.key});
+  const ReminderApp({
+    super.key,
+    required this.database,
+  });
+
+  final AppDatabase database;
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +33,23 @@ class ReminderApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.dark,
       ),
-      home: const HomePage(title: 'GPS Reminder'),
+      home: HomePage(
+        title: 'GPS Reminder',
+        database: database,
+      ),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
+  const HomePage({
+    super.key,
+    required this.title,
+    required this.database
+  });
 
   final String title;
+  final AppDatabase database;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -52,24 +66,22 @@ class _HomePageState extends State<HomePage> {
     });
 
     return DefaultTabController(
-        length: 3,
+        length: 2,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             title: Text(widget.title),
             bottom: const TabBar(
               tabs: <Widget> [
-                Tab(icon: Icon(Icons.task_alt)),
+                Tab(icon: Icon(Icons.notifications)),
                 Tab(icon: Icon(Icons.location_pin)),
-                Tab(icon: Icon(Icons.settings)),
               ],
             ),
           ),
-          body: const TabBarView(
+          body: TabBarView(
             children: [
-              RemindersPage(),
-              LocationsPage(),
-              SettingsPage(),
+              RemindersPage(database: widget.database),
+              const LocationsPage(),
             ],
           ),
         )
