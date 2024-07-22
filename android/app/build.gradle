@@ -1,7 +1,7 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "org.jetbrains.kotlin.android" version "2.0.0"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -23,6 +23,15 @@ if (flutterVersionName == null) {
     flutterVersionName = "1.0"
 }
 
+// APIキー読み込み
+def secretProperties = new Properties()
+def secretPropertiesFile = rootProject.file('secret.properties')
+if (secretPropertiesFile.exists()) {
+    secretPropertiesFile.withReader('UTF-8') { reader ->
+        secretProperties.load(reader)
+    }
+}
+
 android {
     namespace = "com.outtech105.gpsreminder.gps_reminder"
     compileSdk = flutter.compileSdkVersion
@@ -42,6 +51,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        minSdkVersion flutter.minSdkVersion
+
+        manifestPlaceholders += [
+                googleMapApiKey: secretProperties.getProperty('googleMap.apiKey'),
+        ]
     }
 
     buildTypes {
