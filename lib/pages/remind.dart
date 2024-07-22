@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../database/reminds.dart';
+import '../database/database.dart';
 
 class RemindPage extends StatefulWidget {
   const RemindPage({

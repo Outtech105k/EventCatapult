@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../database/reminds.dart';
+import '../database/database.dart';
 import '../services/location.dart';
 import 'reminds.dart';
 import 'locations.dart';
