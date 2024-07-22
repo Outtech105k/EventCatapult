@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'map.dart';
+import 'mappos.dart';
 
 class LocationsPage extends StatefulWidget {
   const LocationsPage({super.key});
@@ -22,12 +22,7 @@ class _LocationsPageState extends State<LocationsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => Scaffold(
-                  appBar: AppBar(
-                    title: const Text("場所の登録"),
-                  ),
-                  body: const Map(),
-                )
+                builder: (context) => const MapPos(),
             ),
           );
         },
