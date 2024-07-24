@@ -8,9 +8,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 import 'place_edit.dart';
+import '../database/database.dart';
 
 class PlaceMapPage extends StatefulWidget {
-  const PlaceMapPage({super.key});
+  const PlaceMapPage({
+    super.key,
+    required this.database,
+  });
+
+  final AppDatabase database;
 
   @override
   State<PlaceMapPage> createState() => _PlaceMapPageState();
@@ -21,7 +27,7 @@ class _PlaceMapPageState extends State<PlaceMapPage> {
   LatLng? _currentPosition;
   final Location _location = Location();
   final Set<Marker> _markers = {};
-  Marker? _PinnedMarker;
+  Marker? _pinnedMarker;
 
   @override
   void initState() {
@@ -46,13 +52,16 @@ class _PlaceMapPageState extends State<PlaceMapPage> {
             TextButton(
               // ピンが立っていなければ, 次に進むボタンを無効化
               // TODO: 立っていれば, 次の画面に座標を渡す
-              onPressed: _PinnedMarker==null
+              onPressed: _pinnedMarker==null
                   ? null
                   : () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const PlaceEditPage(),
+                        builder: (context) => PlaceEditPage(
+                          position: _currentPosition!,
+                          database: widget.database,
+                        ),
                     ),
                 );
               },
@@ -91,7 +100,7 @@ class _PlaceMapPageState extends State<PlaceMapPage> {
                 ),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
-                mapType: MapType.hybrid,
+                mapType: MapType.normal,
                 zoomGesturesEnabled: true,
                 zoomControlsEnabled: true,
                 onMapCreated: (GoogleMapController controller) {
@@ -102,12 +111,12 @@ class _PlaceMapPageState extends State<PlaceMapPage> {
                 // 長押しでピンを立てる(すでに立ててあれば置き換える)
                 onLongPress: (latLng) {
                   setState(() {
-                    _markers.remove(_PinnedMarker);
-                    _PinnedMarker = Marker(
+                    _markers.remove(_pinnedMarker);
+                    _pinnedMarker = Marker(
                       markerId: MarkerId(latLng.toString()), // TODO: 適切な一時的IDを設定
                       position: latLng,
                     );
-                    _markers.add(_PinnedMarker!);
+                    _markers.add(_pinnedMarker!);
                   });
                 },
               ),
