@@ -34,6 +34,7 @@ class ReminderApp extends StatelessWidget {
         colorSchemeSeed: Colors.blueAccent,
         useMaterial3: true,
         brightness: Brightness.dark,
+        fontFamily: 'NotoSansJP'
       ),
       home: HomePage(
         title: 'GPS Reminder',

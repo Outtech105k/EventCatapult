@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
           body: TabBarView(
             children: [
               RemindsListPage(database: widget.database),
-              const PlacesListPage(),
+              PlacesListPage(database: widget.database),
             ],
           ),
         )

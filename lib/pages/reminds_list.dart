@@ -3,6 +3,7 @@
  * リマインド一覧を表示するページ
  */
 
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import 'remind.dart';
@@ -61,7 +62,7 @@ class _RemindsListPageState extends State<RemindsListPage> {
           tooltip: "リマインダーを追加",
           child: const Icon(Icons.notification_add),
           onPressed: () async {
-            await insertRemind(widget.database, Remind(id: DateTime.now().millisecondsSinceEpoch, title: "Test Title", content: "CONTENT"));
+            await insertRemind(widget.database, const RemindsCompanion(title: Value("Test Title"), content: Value("CONTENT")));
           },
         ),
       ),

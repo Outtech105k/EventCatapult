@@ -34,12 +34,20 @@ class Reminds extends Table{
 }
 
 /* ---------- CRUD ---------- */
-Stream<List<Remind>> watchAllReminds(AppDatabase db){
-  return db.select(db.reminds).watch();
+Future insertPlace(AppDatabase db, PlacesCompanion place) {
+  return db.into(db.places).insert(place);
 }
 
-Future insertRemind(AppDatabase db, Remind remind) {
+Stream<List<Place>> watchAllPlaces(AppDatabase db){
+  return db.select(db.places).watch();
+}
+
+Future insertRemind(AppDatabase db, RemindsCompanion remind) {
   return db.into(db.reminds).insert(remind);
+}
+
+Stream<List<Remind>> watchAllReminds(AppDatabase db){
+  return db.select(db.reminds).watch();
 }
 
 Future deleteRemind(AppDatabase db, Remind remind) {
