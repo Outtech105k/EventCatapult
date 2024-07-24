@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'mappos.dart';
+import 'map_pos.dart';
 
 class LocationsPage extends StatefulWidget {
   const LocationsPage({super.key});

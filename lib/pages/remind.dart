@@ -29,7 +29,10 @@ class _RemindState extends State<RemindPage> {
           actions: [
             IconButton(
               icon: const Icon(Icons.delete),
-              onPressed: (){},
+              onPressed: (){
+                Navigator.pop(context);
+                deleteRemind(widget.database, widget.remind);
+              },
             )
           ],
         ),
@@ -38,7 +41,7 @@ class _RemindState extends State<RemindPage> {
               children: <Widget>[
                 Text(
                     widget.remind.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),

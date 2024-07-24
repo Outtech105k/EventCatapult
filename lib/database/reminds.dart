@@ -14,3 +14,7 @@ Stream<List<Remind>> watchAllReminds(AppDatabase db){
 Future insertRemind(AppDatabase db, Remind remind) {
   return db.into(db.reminds).insert(remind);
 }
+
+Future deleteRemind(AppDatabase db, Remind remind) {
+  return db.delete(db.reminds).delete(remind);
+}
