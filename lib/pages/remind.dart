@@ -1,4 +1,10 @@
+/*
+ * RemindPage
+ * リマインド情報を確認するページ
+ */
+
 import 'package:flutter/material.dart';
+
 import '../database/database.dart';
 
 class RemindPage extends StatefulWidget {
@@ -21,11 +27,12 @@ class _RemindState extends State<RemindPage> {
     super.initState();
   }
 
+  // TODO: 充実化
   @override
   Widget build(context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("リマインダーの内容"),
+          title: const Text("リマインドの内容"),
           actions: [
             IconButton(
               icon: const Icon(Icons.delete),

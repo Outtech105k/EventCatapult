@@ -1,9 +1,15 @@
-import 'package:flutter/material.dart';
-import '../database/database.dart';
-import 'remind.dart';
+/*
+ * RemindsListPage
+ * リマインド一覧を表示するページ
+ */
 
-class RemindersPage extends StatefulWidget {
-  const RemindersPage({
+import 'package:flutter/material.dart';
+
+import 'remind.dart';
+import '../database/database.dart';
+
+class RemindsListPage extends StatefulWidget {
+  const RemindsListPage({
     super.key,
     required this.database,
   });
@@ -11,10 +17,10 @@ class RemindersPage extends StatefulWidget {
   final AppDatabase database;
 
   @override
-  State<RemindersPage> createState() => _RemindersPageState();
+  State<RemindsListPage> createState() => _RemindsListPageState();
 }
 
-class _RemindersPageState extends State<RemindersPage> {
+class _RemindsListPageState extends State<RemindsListPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -28,6 +34,8 @@ class _RemindersPageState extends State<RemindersPage> {
               itemBuilder: (context, index) {
                 final remind = reminds[index];
                   return ListTile(
+                    // リマインド情報の表示
+                    // TODO: 充実化
                     title: Text(remind.title),
                     subtitle: Text(remind.id.toString()),
                     onTap: () {
@@ -46,6 +54,9 @@ class _RemindersPageState extends State<RemindersPage> {
             );
           },
         ),
+
+        // リマインダ追加ボタン
+        // TODO: 追加ページ作成・遷移実装
         floatingActionButton: FloatingActionButton(
           tooltip: "リマインダーを追加",
           child: const Icon(Icons.notification_add),

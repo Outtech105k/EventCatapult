@@ -1,21 +1,27 @@
+/*
+ * PlaceMapPage
+ * GoogleMapを描画し, 地点を指定するページ
+ */
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'location_edit.dart';
 
-class MapPos extends StatefulWidget {
-  const MapPos({super.key});
+import 'place_edit.dart';
+
+class PlaceMapPage extends StatefulWidget {
+  const PlaceMapPage({super.key});
 
   @override
-  State<MapPos> createState() => _MapPosState();
+  State<PlaceMapPage> createState() => _PlaceMapPageState();
 }
 
-class _MapPosState extends State<MapPos> {
+class _PlaceMapPageState extends State<PlaceMapPage> {
   GoogleMapController? _controller;
   LatLng? _currentPosition;
   final Location _location = Location();
   final Set<Marker> _markers = {};
-  Marker? _lastPinnedMarker;
+  Marker? _PinnedMarker;
 
   @override
   void initState() {
@@ -23,6 +29,7 @@ class _MapPosState extends State<MapPos> {
     _fetchLocation();
   }
 
+  // 現在地の取得
   Future<void> _fetchLocation() async {
     var locationData = await _location.getLocation();
     setState(() {
@@ -37,13 +44,15 @@ class _MapPosState extends State<MapPos> {
           title: const Text("場所の追加"),
           actions: [
             TextButton(
-              onPressed: _lastPinnedMarker==null
+              // ピンが立っていなければ, 次に進むボタンを無効化
+              // TODO: 立っていれば, 次の画面に座標を渡す
+              onPressed: _PinnedMarker==null
                   ? null
                   : () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const LocationEdit(),
+                        builder: (context) => const PlaceEditPage(),
                     ),
                 );
               },
@@ -51,46 +60,54 @@ class _MapPosState extends State<MapPos> {
             )
           ],
         ),
+
+        // マップの描画準備ができていなければ、ローディング画面を表示する
         body: _currentPosition == null
             ? const Center(child: CircularProgressIndicator())
             : Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+
+            // 検索窓
+            // TODO: 実装
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: TextField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "場所を検索",
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.search),
                 ),
-                onSubmitted: (value) {
-                  print(value);
-                },
               ),
             ),
+
+            // GoogleMap本体
             Expanded(
               child: GoogleMap(
+                // 初期状態で現在地
+                // TODO: ページ初期値で表示地点を指定されていれば、そこに移動
                 initialCameraPosition: CameraPosition(
                   target: _currentPosition!,
                   zoom: 15.0,
                 ),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
-                mapType: MapType.normal,
+                mapType: MapType.hybrid,
                 zoomGesturesEnabled: true,
                 zoomControlsEnabled: true,
                 onMapCreated: (GoogleMapController controller) {
                   _controller = controller;
                 },
+
                 markers: _markers,
+                // 長押しでピンを立てる(すでに立ててあれば置き換える)
                 onLongPress: (latLng) {
                   setState(() {
-                    _markers.remove(_lastPinnedMarker);
-                    _lastPinnedMarker = Marker(
-                      markerId: MarkerId(latLng.toString()),
+                    _markers.remove(_PinnedMarker);
+                    _PinnedMarker = Marker(
+                      markerId: MarkerId(latLng.toString()), // TODO: 適切な一時的IDを設定
                       position: latLng,
                     );
-                    _markers.add(_lastPinnedMarker!);
+                    _markers.add(_PinnedMarker!);
                   });
                 },
               ),

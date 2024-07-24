@@ -1,3 +1,8 @@
+/*
+ * Main
+ * アプリの基本情報設定
+ */
+
 import 'package:flutter/material.dart';
 import 'database/database.dart';
 import 'pages/home.dart';
