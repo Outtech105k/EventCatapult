@@ -1,27 +1,27 @@
 /*
- * RemindPage
- * リマインド情報を確認するページ
+ * PlacePage
+ * 登録地点情報を確認するページ
  */
 
 import 'package:flutter/material.dart';
 
 import '../database/database.dart';
 
-class RemindPage extends StatefulWidget {
-  const RemindPage({
+class PlacePage extends StatefulWidget {
+  const PlacePage({
     super.key,
     required this.database,
-    required this.remind,
+    required this.place,
   });
 
   final AppDatabase database;
-  final Remind remind;
+  final Place place;
 
   @override
-  State<RemindPage> createState() => _RemindPageState();
+  State<PlacePage> createState() => _PlacePageState();
 }
 
-class _RemindPageState extends State<RemindPage> {
+class _PlacePageState extends State<PlacePage> {
   @override
   void initState() {
     super.initState();
@@ -32,13 +32,13 @@ class _RemindPageState extends State<RemindPage> {
   Widget build(context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("リマインドの内容"),
+          title: const Text("登録地点の内容"),
           actions: [
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: (){
                 Navigator.pop(context);
-                deleteRemind(widget.database, widget.remind);
+                deletePlace(widget.database, widget.place);
               },
             )
           ],
@@ -47,12 +47,13 @@ class _RemindPageState extends State<RemindPage> {
             child: Column(
               children: <Widget>[
                 Text(
-                    widget.remind.title,
+                    widget.place.name,
                   style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
-                )
+                ),
+                Text(widget.place.description)
               ],
             )
         )

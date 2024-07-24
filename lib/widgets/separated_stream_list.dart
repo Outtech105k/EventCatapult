@@ -20,7 +20,9 @@ class SeparatedStreamList <T> extends StatelessWidget {
       stream: stream,
       builder: (context, snapshot) {
         final records = snapshot.data ?? [];
-        return ListView.separated(
+        return records.isEmpty
+            ? Center(child: const Text("データがありません"))
+            : ListView.separated(
           itemCount: records.length,
           itemBuilder: (context, index) {
             final record = records[index];

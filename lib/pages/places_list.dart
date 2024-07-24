@@ -6,6 +6,8 @@
 import 'package:flutter/material.dart';
 
 import 'place_map.dart';
+import 'place.dart';
+
 import '../database/database.dart';
 import '../widgets/separated_stream_list.dart';
 
@@ -31,7 +33,15 @@ class _PlacesListPageState extends State<PlacesListPage> {
         itemBuilder: (BuildContext context, Place place) {
           return ListTile(
             title: Text(place.name),
-            subtitle: Text(place.id.toString()),
+            subtitle: Text(place.description),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PlacePage(database: widget.database, place: place),
+                )
+              );
+            },
           );
         },
       ),

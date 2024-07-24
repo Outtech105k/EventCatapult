@@ -38,6 +38,10 @@ Future insertPlace(AppDatabase db, PlacesCompanion place) {
   return db.into(db.places).insert(place);
 }
 
+Future deletePlace(AppDatabase db, Place place) {
+  return db.delete(db.places).delete(place);
+}
+
 Stream<List<Place>> watchAllPlaces(AppDatabase db){
   return db.select(db.places).watch();
 }

@@ -76,6 +76,7 @@ class _PlaceMapPageState extends State<PlaceMapPage> {
             : Column(
           children: [
 
+            /*
             // 検索窓
             // TODO: 実装
             const Padding(
@@ -88,6 +89,7 @@ class _PlaceMapPageState extends State<PlaceMapPage> {
                 ),
               ),
             ),
+             */
 
             // GoogleMap本体
             Expanded(
