@@ -47,7 +47,7 @@ class _RemindPageState extends State<RemindPage> {
             child: Column(
               children: <Widget>[
                 Text(
-                    widget.remind.title,
+                  widget.remind.name,
                   style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,

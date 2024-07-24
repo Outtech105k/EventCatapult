@@ -33,7 +33,7 @@ class _RemindsListPageState extends State<RemindsListPage> {
             return ListTile(
               // リマインド情報の表示
               // TODO: 充実化
-              title: Text(remind.title),
+              title: Text(remind.name),
               subtitle: Text(remind.id.toString()),
               onTap: () {
                 Navigator.push(
@@ -52,7 +52,8 @@ class _RemindsListPageState extends State<RemindsListPage> {
           tooltip: "リマインダーを追加",
           child: const Icon(Icons.notification_add),
           onPressed: () async {
-            await insertRemind(widget.database, const RemindsCompanion(title: Value("Test Title"), content: Value("CONTENT")));
+            await insertRemind(widget.database, const RemindsCompanion(
+            ));
           },
         ),
       ),
