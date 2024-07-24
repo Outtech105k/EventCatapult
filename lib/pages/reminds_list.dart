@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import 'remind.dart';
 import '../database/database.dart';
+import '../widgets/separated_stream_list.dart';
 
 class RemindsListPage extends StatefulWidget {
   const RemindsListPage({
@@ -26,32 +27,21 @@ class _RemindsListPageState extends State<RemindsListPage> {
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
-        body: StreamBuilder<List<Remind>>(
+        body: SeparatedStreamList<Remind>(
           stream: watchAllReminds(widget.database),
-          builder: (context, snapshot) {
-            final reminds = snapshot.data ?? [];
-            return ListView.separated(
-              itemCount: reminds.length,
-              itemBuilder: (context, index) {
-                final remind = reminds[index];
-                  return ListTile(
-                    // リマインド情報の表示
-                    // TODO: 充実化
-                    title: Text(remind.title),
-                    subtitle: Text(remind.id.toString()),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RemindPage(database: widget.database, remind: remind)),
-                      );
-                    },
-                  );
+          itemBuilder: (context, remind) {
+            return ListTile(
+              // リマインド情報の表示
+              // TODO: 充実化
+              title: Text(remind.title),
+              subtitle: Text(remind.id.toString()),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RemindPage(database: widget.database, remind: remind)),
+                );
               },
-              separatorBuilder: (context, index) => const Divider(
-                color: Colors.grey,
-                thickness: 1.0,
-              )
             );
           },
         ),
