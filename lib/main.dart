@@ -1,3 +1,8 @@
+/*
+ * Main
+ * アプリの基本情報設定
+ */
+
 import 'package:flutter/material.dart';
 import 'database/database.dart';
 import 'pages/home.dart';
@@ -29,6 +34,7 @@ class ReminderApp extends StatelessWidget {
         colorSchemeSeed: Colors.blueAccent,
         useMaterial3: true,
         brightness: Brightness.dark,
+        fontFamily: 'NotoSansJP'
       ),
       home: HomePage(
         title: 'GPS Reminder',

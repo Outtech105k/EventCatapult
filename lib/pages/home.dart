@@ -1,15 +1,22 @@
+/*
+ * HomePage
+ * アプリのルートページ, ここにはTabしか配置しない
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../database/database.dart';
 import '../services/location.dart';
-import 'reminds.dart';
-import 'locations.dart';
+
+import 'reminds_list.dart';
+import 'places_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
     super.key,
-    required this.title,
-    required this.database
+    required this.title,   // アプリタイトル
+    required this.database // DBハンドラ
   });
 
   final String title;
@@ -22,7 +29,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    // 描画完了後、権限の許可を求める
+    // 描画完了後、権限の許可をチェック(許可されていなければ許可させる)
+    // TODO: 権限要求ページへの遷移
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if(!await checkLocationPermissions()){
         SystemNavigator.pop();
@@ -44,8 +52,8 @@ class _HomePageState extends State<HomePage> {
           ),
           body: TabBarView(
             children: [
-              RemindersPage(database: widget.database),
-              const LocationsPage(),
+              RemindsListPage(database: widget.database),
+              PlacesListPage(database: widget.database),
             ],
           ),
         )

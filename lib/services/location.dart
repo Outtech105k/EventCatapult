@@ -1,3 +1,7 @@
+/*
+ * GPS関連のクラス・関数群
+ */
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:location/location.dart';
 
