@@ -29,8 +29,10 @@ class Places extends Table{
 @DataClassName('Remind')
 class Reminds extends Table{
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get title => text().withLength(min: 1, max: 50)();
-  TextColumn get content => text().withLength(min: 0, max: 1000)();
+  TextColumn get name => text().withLength(min: 1, max: RemindsConfig.nameMaxLength)();
+  TextColumn get detail => text().withLength(min: 0, max: RemindsConfig.detailMaxLength)();
+  IntColumn get placeId => integer().references(Places, #id)();
+  DateTimeColumn get deadline => dateTime()();
 }
 
 /* ---------- CRUD ---------- */

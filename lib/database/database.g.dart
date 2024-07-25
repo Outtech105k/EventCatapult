@@ -3,225 +3,6 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class $RemindsTable extends Reminds with TableInfo<$RemindsTable, Remind> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $RemindsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _contentMeta =
-      const VerificationMeta('content');
-  @override
-  late final GeneratedColumn<String> content = GeneratedColumn<String>(
-      'content', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(
-          minTextLength: 0, maxTextLength: 1000),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, title, content];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'reminds';
-  @override
-  VerificationContext validateIntegrity(Insertable<Remind> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    } else if (isInserting) {
-      context.missing(_titleMeta);
-    }
-    if (data.containsKey('content')) {
-      context.handle(_contentMeta,
-          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
-    } else if (isInserting) {
-      context.missing(_contentMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Remind map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Remind(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      content: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
-    );
-  }
-
-  @override
-  $RemindsTable createAlias(String alias) {
-    return $RemindsTable(attachedDatabase, alias);
-  }
-}
-
-class Remind extends DataClass implements Insertable<Remind> {
-  final int id;
-  final String title;
-  final String content;
-  const Remind({required this.id, required this.title, required this.content});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['title'] = Variable<String>(title);
-    map['content'] = Variable<String>(content);
-    return map;
-  }
-
-  RemindsCompanion toCompanion(bool nullToAbsent) {
-    return RemindsCompanion(
-      id: Value(id),
-      title: Value(title),
-      content: Value(content),
-    );
-  }
-
-  factory Remind.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Remind(
-      id: serializer.fromJson<int>(json['id']),
-      title: serializer.fromJson<String>(json['title']),
-      content: serializer.fromJson<String>(json['content']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'title': serializer.toJson<String>(title),
-      'content': serializer.toJson<String>(content),
-    };
-  }
-
-  Remind copyWith({int? id, String? title, String? content}) => Remind(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        content: content ?? this.content,
-      );
-  Remind copyWithCompanion(RemindsCompanion data) {
-    return Remind(
-      id: data.id.present ? data.id.value : this.id,
-      title: data.title.present ? data.title.value : this.title,
-      content: data.content.present ? data.content.value : this.content,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Remind(')
-          ..write('id: $id, ')
-          ..write('title: $title, ')
-          ..write('content: $content')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, title, content);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Remind &&
-          other.id == this.id &&
-          other.title == this.title &&
-          other.content == this.content);
-}
-
-class RemindsCompanion extends UpdateCompanion<Remind> {
-  final Value<int> id;
-  final Value<String> title;
-  final Value<String> content;
-  const RemindsCompanion({
-    this.id = const Value.absent(),
-    this.title = const Value.absent(),
-    this.content = const Value.absent(),
-  });
-  RemindsCompanion.insert({
-    this.id = const Value.absent(),
-    required String title,
-    required String content,
-  })  : title = Value(title),
-        content = Value(content);
-  static Insertable<Remind> custom({
-    Expression<int>? id,
-    Expression<String>? title,
-    Expression<String>? content,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (title != null) 'title': title,
-      if (content != null) 'content': content,
-    });
-  }
-
-  RemindsCompanion copyWith(
-      {Value<int>? id, Value<String>? title, Value<String>? content}) {
-    return RemindsCompanion(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      content: content ?? this.content,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
-    }
-    if (content.present) {
-      map['content'] = Variable<String>(content.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RemindsCompanion(')
-          ..write('id: $id, ')
-          ..write('title: $title, ')
-          ..write('content: $content')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $PlacesTable extends Places with TableInfo<$PlacesTable, Place> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -530,104 +311,322 @@ class PlacesCompanion extends UpdateCompanion<Place> {
   }
 }
 
+class $RemindsTable extends Reminds with TableInfo<$RemindsTable, Remind> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RemindsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name =
+      GeneratedColumn<String>('name', aliasedName, false,
+          additionalChecks: GeneratedColumn.checkTextLength(
+            minTextLength: 1,
+          ),
+          type: DriftSqlType.string,
+          requiredDuringInsert: true);
+  static const VerificationMeta _detailMeta = const VerificationMeta('detail');
+  @override
+  late final GeneratedColumn<String> detail =
+      GeneratedColumn<String>('detail', aliasedName, false,
+          additionalChecks: GeneratedColumn.checkTextLength(
+            minTextLength: 0,
+          ),
+          type: DriftSqlType.string,
+          requiredDuringInsert: true);
+  static const VerificationMeta _placeIdMeta =
+      const VerificationMeta('placeId');
+  @override
+  late final GeneratedColumn<int> placeId = GeneratedColumn<int>(
+      'place_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES places (id)'));
+  static const VerificationMeta _deadlineMeta =
+      const VerificationMeta('deadline');
+  @override
+  late final GeneratedColumn<DateTime> deadline = GeneratedColumn<DateTime>(
+      'deadline', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, detail, placeId, deadline];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'reminds';
+  @override
+  VerificationContext validateIntegrity(Insertable<Remind> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('detail')) {
+      context.handle(_detailMeta,
+          detail.isAcceptableOrUnknown(data['detail']!, _detailMeta));
+    } else if (isInserting) {
+      context.missing(_detailMeta);
+    }
+    if (data.containsKey('place_id')) {
+      context.handle(_placeIdMeta,
+          placeId.isAcceptableOrUnknown(data['place_id']!, _placeIdMeta));
+    } else if (isInserting) {
+      context.missing(_placeIdMeta);
+    }
+    if (data.containsKey('deadline')) {
+      context.handle(_deadlineMeta,
+          deadline.isAcceptableOrUnknown(data['deadline']!, _deadlineMeta));
+    } else if (isInserting) {
+      context.missing(_deadlineMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Remind map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Remind(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      detail: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}detail'])!,
+      placeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}place_id'])!,
+      deadline: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}deadline'])!,
+    );
+  }
+
+  @override
+  $RemindsTable createAlias(String alias) {
+    return $RemindsTable(attachedDatabase, alias);
+  }
+}
+
+class Remind extends DataClass implements Insertable<Remind> {
+  final int id;
+  final String name;
+  final String detail;
+  final int placeId;
+  final DateTime deadline;
+  const Remind(
+      {required this.id,
+      required this.name,
+      required this.detail,
+      required this.placeId,
+      required this.deadline});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['detail'] = Variable<String>(detail);
+    map['place_id'] = Variable<int>(placeId);
+    map['deadline'] = Variable<DateTime>(deadline);
+    return map;
+  }
+
+  RemindsCompanion toCompanion(bool nullToAbsent) {
+    return RemindsCompanion(
+      id: Value(id),
+      name: Value(name),
+      detail: Value(detail),
+      placeId: Value(placeId),
+      deadline: Value(deadline),
+    );
+  }
+
+  factory Remind.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Remind(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      detail: serializer.fromJson<String>(json['detail']),
+      placeId: serializer.fromJson<int>(json['placeId']),
+      deadline: serializer.fromJson<DateTime>(json['deadline']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'detail': serializer.toJson<String>(detail),
+      'placeId': serializer.toJson<int>(placeId),
+      'deadline': serializer.toJson<DateTime>(deadline),
+    };
+  }
+
+  Remind copyWith(
+          {int? id,
+          String? name,
+          String? detail,
+          int? placeId,
+          DateTime? deadline}) =>
+      Remind(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        detail: detail ?? this.detail,
+        placeId: placeId ?? this.placeId,
+        deadline: deadline ?? this.deadline,
+      );
+  Remind copyWithCompanion(RemindsCompanion data) {
+    return Remind(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      detail: data.detail.present ? data.detail.value : this.detail,
+      placeId: data.placeId.present ? data.placeId.value : this.placeId,
+      deadline: data.deadline.present ? data.deadline.value : this.deadline,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Remind(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('detail: $detail, ')
+          ..write('placeId: $placeId, ')
+          ..write('deadline: $deadline')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, detail, placeId, deadline);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Remind &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.detail == this.detail &&
+          other.placeId == this.placeId &&
+          other.deadline == this.deadline);
+}
+
+class RemindsCompanion extends UpdateCompanion<Remind> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> detail;
+  final Value<int> placeId;
+  final Value<DateTime> deadline;
+  const RemindsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.detail = const Value.absent(),
+    this.placeId = const Value.absent(),
+    this.deadline = const Value.absent(),
+  });
+  RemindsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required String detail,
+    required int placeId,
+    required DateTime deadline,
+  })  : name = Value(name),
+        detail = Value(detail),
+        placeId = Value(placeId),
+        deadline = Value(deadline);
+  static Insertable<Remind> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? detail,
+    Expression<int>? placeId,
+    Expression<DateTime>? deadline,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (detail != null) 'detail': detail,
+      if (placeId != null) 'place_id': placeId,
+      if (deadline != null) 'deadline': deadline,
+    });
+  }
+
+  RemindsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String>? detail,
+      Value<int>? placeId,
+      Value<DateTime>? deadline}) {
+    return RemindsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      detail: detail ?? this.detail,
+      placeId: placeId ?? this.placeId,
+      deadline: deadline ?? this.deadline,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (detail.present) {
+      map['detail'] = Variable<String>(detail.value);
+    }
+    if (placeId.present) {
+      map['place_id'] = Variable<int>(placeId.value);
+    }
+    if (deadline.present) {
+      map['deadline'] = Variable<DateTime>(deadline.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RemindsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('detail: $detail, ')
+          ..write('placeId: $placeId, ')
+          ..write('deadline: $deadline')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $RemindsTable reminds = $RemindsTable(this);
   late final $PlacesTable places = $PlacesTable(this);
+  late final $RemindsTable reminds = $RemindsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [reminds, places];
-}
-
-typedef $$RemindsTableCreateCompanionBuilder = RemindsCompanion Function({
-  Value<int> id,
-  required String title,
-  required String content,
-});
-typedef $$RemindsTableUpdateCompanionBuilder = RemindsCompanion Function({
-  Value<int> id,
-  Value<String> title,
-  Value<String> content,
-});
-
-class $$RemindsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $RemindsTable,
-    Remind,
-    $$RemindsTableFilterComposer,
-    $$RemindsTableOrderingComposer,
-    $$RemindsTableCreateCompanionBuilder,
-    $$RemindsTableUpdateCompanionBuilder> {
-  $$RemindsTableTableManager(_$AppDatabase db, $RemindsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$RemindsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$RemindsTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> content = const Value.absent(),
-          }) =>
-              RemindsCompanion(
-            id: id,
-            title: title,
-            content: content,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String title,
-            required String content,
-          }) =>
-              RemindsCompanion.insert(
-            id: id,
-            title: title,
-            content: content,
-          ),
-        ));
-}
-
-class $$RemindsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $RemindsTable> {
-  $$RemindsTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$RemindsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $RemindsTable> {
-  $$RemindsTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  List<DatabaseSchemaEntity> get allSchemaEntities => [places, reminds];
 }
 
 typedef $$PlacesTableCreateCompanionBuilder = PlacesCompanion Function({
@@ -719,6 +718,19 @@ class $$PlacesTableFilterComposer
       column: $state.table.longitude,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ComposableFilter remindsRefs(
+      ComposableFilter Function($$RemindsTableFilterComposer f) f) {
+    final $$RemindsTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.reminds,
+        getReferencedColumn: (t) => t.placeId,
+        builder: (joinBuilder, parentComposers) => $$RemindsTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.reminds, joinBuilder, parentComposers)));
+    return f(composer);
+  }
 }
 
 class $$PlacesTableOrderingComposer
@@ -750,11 +762,145 @@ class $$PlacesTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+typedef $$RemindsTableCreateCompanionBuilder = RemindsCompanion Function({
+  Value<int> id,
+  required String name,
+  required String detail,
+  required int placeId,
+  required DateTime deadline,
+});
+typedef $$RemindsTableUpdateCompanionBuilder = RemindsCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<String> detail,
+  Value<int> placeId,
+  Value<DateTime> deadline,
+});
+
+class $$RemindsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $RemindsTable,
+    Remind,
+    $$RemindsTableFilterComposer,
+    $$RemindsTableOrderingComposer,
+    $$RemindsTableCreateCompanionBuilder,
+    $$RemindsTableUpdateCompanionBuilder> {
+  $$RemindsTableTableManager(_$AppDatabase db, $RemindsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$RemindsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$RemindsTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> detail = const Value.absent(),
+            Value<int> placeId = const Value.absent(),
+            Value<DateTime> deadline = const Value.absent(),
+          }) =>
+              RemindsCompanion(
+            id: id,
+            name: name,
+            detail: detail,
+            placeId: placeId,
+            deadline: deadline,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            required String detail,
+            required int placeId,
+            required DateTime deadline,
+          }) =>
+              RemindsCompanion.insert(
+            id: id,
+            name: name,
+            detail: detail,
+            placeId: placeId,
+            deadline: deadline,
+          ),
+        ));
+}
+
+class $$RemindsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $RemindsTable> {
+  $$RemindsTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get detail => $state.composableBuilder(
+      column: $state.table.detail,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get deadline => $state.composableBuilder(
+      column: $state.table.deadline,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$PlacesTableFilterComposer get placeId {
+    final $$PlacesTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.placeId,
+        referencedTable: $state.db.places,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$PlacesTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.places, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$RemindsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $RemindsTable> {
+  $$RemindsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get detail => $state.composableBuilder(
+      column: $state.table.detail,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get deadline => $state.composableBuilder(
+      column: $state.table.deadline,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$PlacesTableOrderingComposer get placeId {
+    final $$PlacesTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.placeId,
+        referencedTable: $state.db.places,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$PlacesTableOrderingComposer(ComposerState(
+                $state.db, $state.db.places, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$RemindsTableTableManager get reminds =>
-      $$RemindsTableTableManager(_db, _db.reminds);
   $$PlacesTableTableManager get places =>
       $$PlacesTableTableManager(_db, _db.places);
+  $$RemindsTableTableManager get reminds =>
+      $$RemindsTableTableManager(_db, _db.reminds);
 }

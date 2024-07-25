@@ -1,87 +1,75 @@
 /*
- * PlaceEditPage
- * 登録地点の名前・説明を編集するページ
+ * RemindEditPage
+ * リマインド情報を編集するページ
  */
 
-import 'package:drift/drift.dart' as d;
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../config.dart';
 import '../database/database.dart';
 
-class PlaceEditPage extends StatefulWidget {
-  const PlaceEditPage({
+class RemindEditPage extends StatefulWidget {
+  const RemindEditPage({
     super.key,
-    required this.position,
     required this.database,
   });
 
-  final LatLng position;
   final AppDatabase database;
 
   @override
-  State<PlaceEditPage> createState() => _PlaceEditPageState();
+  State<RemindEditPage> createState() => _RemindEditPageState();
 }
 
-class _PlaceEditPageState extends State<PlaceEditPage> {
+class _RemindEditPageState extends State<RemindEditPage> {
   final formKey = GlobalKey<FormState>();
 
-  late TextEditingController _nameController, _descriptionController;
+  late TextEditingController _nameController, _detailController;
 
   @override
   void initState() {
     super.initState();
 
     _nameController = TextEditingController(text: "");
-    _descriptionController = TextEditingController(text: "");
+    _detailController = TextEditingController(text: "");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("場所の設定"),
+          title: const Text("リマインダーの設定"),
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () {
                 // 入力バリデーションを通過したら、データを登録する
                 if (formKey.currentState!.validate()) {
-                  insertPlace(widget.database, PlacesCompanion(
-                    name: d.Value(_nameController.text),
-                    description: d.Value(_descriptionController.text),
-                    longitude: d.Value(widget.position.longitude),
-                    latitude: d.Value(widget.position.latitude),
-                  ));
-                  Navigator.popUntil(
-                      context,
-                      (route) => route.isFirst,
-                  );
+                  // TODO: 登録処理
                 }
               },
             )
           ],
         ),
+        // TODO: リマインダーへの必要時刻の入力
         body: Form(
           key: formKey,
           child: Column(
             children: [
 
-              // 地点名入力フォーム
+              // リマインド名入力フォーム
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
-                    labelText: "地点名(必須)",
+                    labelText: "リマインド名(必須)",
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value==null||value.isEmpty) {
                       return "名前は必須です";
                     }
-                    if (value.length>PlacesConfig.nameMaxLength){
-                      return "名前は${PlacesConfig.nameMaxLength}文字以内にしてください";
+                    if (value.length>RemindsConfig.nameMaxLength){
+                      return "名前は${RemindsConfig.nameMaxLength}文字以内にしてください";
                     }
                     return null;
                   },
@@ -89,23 +77,23 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                 ),
               ),
 
-              // 説明入力フォーム(空白可)
+              // 詳細情報入力フォーム(空白可)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
-                    labelText: "説明",
+                    labelText: "詳細情報",
                     border: OutlineInputBorder(),
                   ),
                   maxLines: 5,
                   keyboardType: TextInputType.multiline,
                   validator: (value) {
-                    if (value != null && value.length > PlacesConfig.descriptionMaxLength){
-                      return "説明は${PlacesConfig.descriptionMaxLength}文字以内にしてください";
+                    if (value != null && value.length > RemindsConfig.detailMaxLength){
+                      return "詳細情報は${RemindsConfig.detailMaxLength}文字以内にしてください";
                     }
                     return null;
                   },
-                  controller: _descriptionController,
+                  controller: _detailController,
                 ),
               ),
 

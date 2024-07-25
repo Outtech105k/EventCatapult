@@ -8,3 +8,8 @@ class PlacesConfig{
   static const int nameMaxLength = 50;
   static const int descriptionMaxLength = 1000;
 }
+
+class RemindsConfig{
+  static const int nameMaxLength = 50;
+  static const int detailMaxLength = 1000;
+}

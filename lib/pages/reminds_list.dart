@@ -3,10 +3,10 @@
  * リマインド一覧を表示するページ
  */
 
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import 'remind.dart';
+import 'remind_edit.dart';
 import '../database/database.dart';
 import '../widgets/separated_stream_list.dart';
 
@@ -33,7 +33,7 @@ class _RemindsListPageState extends State<RemindsListPage> {
             return ListTile(
               // リマインド情報の表示
               // TODO: 充実化
-              title: Text(remind.title),
+              title: Text(remind.name),
               subtitle: Text(remind.id.toString()),
               onTap: () {
                 Navigator.push(
@@ -51,8 +51,13 @@ class _RemindsListPageState extends State<RemindsListPage> {
         floatingActionButton: FloatingActionButton(
           tooltip: "リマインダーを追加",
           child: const Icon(Icons.notification_add),
-          onPressed: () async {
-            await insertRemind(widget.database, const RemindsCompanion(title: Value("Test Title"), content: Value("CONTENT")));
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RemindEditPage(database: widget.database),
+              )
+            );
           },
         ),
       ),
