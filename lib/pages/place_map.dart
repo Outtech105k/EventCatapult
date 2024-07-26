@@ -62,7 +62,7 @@ class _PlaceMapPageState extends State<PlaceMapPage> {
       ),
 
       body: Map(
-        isPinEditable: true,
+        isPlaceShowMode: false,
         onMarkerPinned: _updateMarker,
       ),
     );
