@@ -78,7 +78,7 @@ class _MapState extends State<Map> {
             zoom: 15.0,
           ),
           myLocationEnabled: true,
-          myLocationButtonEnabled: true,
+          myLocationButtonEnabled: widget.isEditMode,
           mapType: MapType.normal,
           zoomControlsEnabled: true,
           zoomGesturesEnabled: true,

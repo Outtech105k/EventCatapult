@@ -15,15 +15,11 @@ class PlaceEditPage extends StatefulWidget {
   const PlaceEditPage({
     super.key,
     required this.database,
-    this.initialPlacePosition,
-    this.initialPlaceName = "",
-    this.initialPlaceDescription = "",
+    this.initialPlace,
   });
 
-  final LatLng? initialPlacePosition;
   final AppDatabase database;
-  final String initialPlaceName;
-  final String initialPlaceDescription;
+  final Place? initialPlace;
 
   @override
   State<PlaceEditPage> createState() => _PlaceEditPageState();
@@ -31,16 +27,18 @@ class PlaceEditPage extends StatefulWidget {
 
 class _PlaceEditPageState extends State<PlaceEditPage> {
   final formKey = GlobalKey<FormState>();
-  late LatLng? _position;
+  LatLng? _position;
   late TextEditingController _nameController, _descriptionController;
 
   @override
   void initState() {
     super.initState();
 
-    _nameController = TextEditingController(text: widget.initialPlaceName);
-    _descriptionController = TextEditingController(text: widget.initialPlaceDescription);
-    _position = widget.initialPlacePosition;
+    _nameController = TextEditingController(text: widget.initialPlace?.name ?? "");
+    _descriptionController = TextEditingController(text: widget.initialPlace?.description ?? "");
+    if (widget.initialPlace != null) {
+      _position = LatLng(widget.initialPlace!.latitude, widget.initialPlace!.longitude);
+    }
   }
 
   @override
@@ -54,13 +52,16 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
               onPressed: () {
                 // 入力バリデーションを通過したら、データを登録する
                 if (formKey.currentState!.validate() && _position!=null) {
-                  insertPlace(widget.database, PlacesCompanion(
+                  upsertPlace(widget.database, PlacesCompanion(
+                    id: widget.initialPlace == null
+                        ? const d.Value.absent()
+                        : d.Value(widget.initialPlace!.id),
                     name: d.Value(_nameController.text),
                     description: d.Value(_descriptionController.text),
                     longitude: d.Value(_position!.longitude),
                     latitude: d.Value(_position!.latitude),
                   ));
-                  Navigator.pop(context);
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 }
               },
             )
@@ -74,6 +75,7 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
               Expanded(
                   child: Map(
                     isEditMode: true,
+                    initPosition: _position,
                     onMarkerPinned: (marker) {
                       setState(() {
                         _position = marker.position;
