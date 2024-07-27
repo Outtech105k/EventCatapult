@@ -4,8 +4,8 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:gps_reminder/pages/place_edit.dart';
 
-import 'place_map.dart';
 import 'place.dart';
 
 import '../database/database.dart';
@@ -54,7 +54,7 @@ class _PlacesListPageState extends State<PlacesListPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => PlaceMapPage(
+                builder: (context) => PlaceEditPage(
                   database: widget.database,
                 ),
             ),

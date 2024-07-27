@@ -55,7 +55,6 @@ class _PlacePageState extends State<PlacePage> {
                       widget.place.latitude,
                       widget.place.longitude
                     ),
-                    isPinEditable: false,
                   ),
                 ),
                 Text(
