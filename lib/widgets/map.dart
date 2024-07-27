@@ -11,12 +11,12 @@ class Map extends StatefulWidget {
   const Map({
     super.key,
     this.initPosition,
-    this.isEditMode = false,
+    required this.isPinEditable,
     this.onMarkerPinned,
   });
 
   final LatLng? initPosition;
-  final bool isEditMode;
+  final bool isPinEditable;
   final Function(Marker)? onMarkerPinned;
 
   @override
@@ -24,9 +24,10 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
-  LatLng? _initPosition; // 地図表示時の初期地点
-  final Set<Marker> _markers = {}; // 表示するマーカー
-  Marker? _pinnedMarker; // ユーザーに表示または設定させるピン
+  LatLng? _initPosition;
+  final Location _location = Location();
+  final Set<Marker> _markers = {};
+  Marker? _pinnedMarker;
 
   @override
   void initState() {
@@ -36,14 +37,12 @@ class _MapState extends State<Map> {
 
   Future<void> _initMapPosition() async {
     if (widget.initPosition == null) {
-      // 初期位置未設定時: 現在地を初期位置とする
-      var locationData = await Location().getLocation();
+      var locationData = await _location.getLocation();
       setState(() {
         _initPosition = LatLng(locationData.latitude!, locationData.longitude!);
       });
     } else {
       setState(() {
-        // 初期位置設定時: 初期位置にピンを立てる
         _initPosition = LatLng(widget.initPosition!.latitude, widget.initPosition!.longitude);
         _pinnedMarker = Marker(
           markerId: MarkerId(_initPosition.toString()), // TODO: 適切な一時的IDを設定
@@ -60,49 +59,50 @@ class _MapState extends State<Map> {
         ? const Center(child: CircularProgressIndicator())
         : Column(
       children: [
-        // 検索窓
-        // TODO: 実装
-        if(widget.isEditMode && false)
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "場所を検索",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
+        /*
+            // 検索窓
+            // TODO: 実装
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "場所を検索",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.search),
+                ),
               ),
             ),
-          ),
-        Expanded(child:  GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: _initPosition!,
-            zoom: 15.0,
-          ),
-          myLocationEnabled: true,
-          myLocationButtonEnabled: widget.isEditMode,
-          mapType: MapType.normal,
-          zoomControlsEnabled: true,
-          zoomGesturesEnabled: true,
+             */
+        Expanded(
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: _initPosition!,
+              zoom: 15.0,
+            ),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            mapType: MapType.normal,
+            zoomControlsEnabled: true,
+            zoomGesturesEnabled: true,
 
-          markers: _markers,
-          onLongPress: (latLng) {
-            if (widget.isEditMode) {
-              setState(() {
-                _markers.remove(_pinnedMarker);
-                _pinnedMarker = Marker(
-                  markerId: MarkerId(latLng.toString()), // TODO: 適切な一時的IDを設定
-                  position: latLng,
-                );
-                _markers.add(_pinnedMarker!);
-                if (widget.onMarkerPinned != null){
-                  widget.onMarkerPinned!(_pinnedMarker!);
-                }
-              });
-            }
-          },
-        ),
+            markers: _markers,
+            onLongPress: (latLng) {
+              if (widget.isPinEditable) {
+                setState(() {
+                  _markers.remove(_pinnedMarker);
+                  _pinnedMarker = Marker(
+                    markerId: MarkerId(latLng.toString()), // TODO: 適切な一時的IDを設定
+                    position: latLng,
+                  );
+                  _markers.add(_pinnedMarker!);
+                  if (widget.onMarkerPinned != null){
+                    widget.onMarkerPinned!(_pinnedMarker!);
+                  }
+                });
+              }
+            },
+          ),
         )
-
       ],
     );
   }
