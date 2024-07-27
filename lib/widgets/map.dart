@@ -24,10 +24,9 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
-  LatLng? _initPosition;
-  final Location _location = Location();
-  final Set<Marker> _markers = {};
-  Marker? _pinnedMarker;
+  LatLng? _initPosition; // 地図表示時の初期地点
+  final Set<Marker> _markers = {}; // 表示するマーカー
+  Marker? _pinnedMarker; // ユーザーに表示または設定させるピン
 
   @override
   void initState() {
@@ -37,12 +36,14 @@ class _MapState extends State<Map> {
 
   Future<void> _initMapPosition() async {
     if (widget.initPosition == null) {
-      var locationData = await _location.getLocation();
+      // 初期位置未設定時: 現在地を初期位置とする
+      var locationData = await Location().getLocation();
       setState(() {
         _initPosition = LatLng(locationData.latitude!, locationData.longitude!);
       });
     } else {
       setState(() {
+        // 初期位置設定時: 初期位置にピンを立てる
         _initPosition = LatLng(widget.initPosition!.latitude, widget.initPosition!.longitude);
         _pinnedMarker = Marker(
           markerId: MarkerId(_initPosition.toString()), // TODO: 適切な一時的IDを設定
