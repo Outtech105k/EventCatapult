@@ -9,16 +9,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../config.dart';
 import '../database/database.dart';
+import '../widgets/map.dart';
 
 class PlaceEditPage extends StatefulWidget {
   const PlaceEditPage({
     super.key,
-    required this.position,
     required this.database,
+    this.initialPlace,
   });
 
-  final LatLng position;
   final AppDatabase database;
+  final Place? initialPlace;
 
   @override
   State<PlaceEditPage> createState() => _PlaceEditPageState();
@@ -26,15 +27,18 @@ class PlaceEditPage extends StatefulWidget {
 
 class _PlaceEditPageState extends State<PlaceEditPage> {
   final formKey = GlobalKey<FormState>();
-
+  LatLng? _position;
   late TextEditingController _nameController, _descriptionController;
 
   @override
   void initState() {
     super.initState();
 
-    _nameController = TextEditingController(text: "");
-    _descriptionController = TextEditingController(text: "");
+    _nameController = TextEditingController(text: widget.initialPlace?.name ?? "");
+    _descriptionController = TextEditingController(text: widget.initialPlace?.description ?? "");
+    if (widget.initialPlace != null) {
+      _position = LatLng(widget.initialPlace!.latitude, widget.initialPlace!.longitude);
+    }
   }
 
   @override
@@ -47,26 +51,38 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
               icon: const Icon(Icons.check),
               onPressed: () {
                 // 入力バリデーションを通過したら、データを登録する
-                if (formKey.currentState!.validate()) {
-                  insertPlace(widget.database, PlacesCompanion(
+                if (formKey.currentState!.validate() && _position!=null) {
+                  upsertPlace(widget.database, PlacesCompanion(
+                    id: widget.initialPlace == null
+                        ? const d.Value.absent()
+                        : d.Value(widget.initialPlace!.id),
                     name: d.Value(_nameController.text),
                     description: d.Value(_descriptionController.text),
-                    longitude: d.Value(widget.position.longitude),
-                    latitude: d.Value(widget.position.latitude),
+                    longitude: d.Value(_position!.longitude),
+                    latitude: d.Value(_position!.latitude),
                   ));
-                  Navigator.popUntil(
-                      context,
-                      (route) => route.isFirst,
-                  );
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 }
               },
             )
           ],
         ),
+
         body: Form(
           key: formKey,
           child: Column(
             children: [
+              Expanded(
+                  child: Map(
+                    isEditMode: true,
+                    initPosition: _position,
+                    onMarkerPinned: (marker) {
+                      setState(() {
+                        _position = marker.position;
+                      });
+                    },
+                  )
+              ),
 
               // 地点名入力フォーム
               Padding(

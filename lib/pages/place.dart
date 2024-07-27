@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../widgets/map.dart';
+import 'place_edit.dart';
 
 import '../database/database.dart';
 
@@ -36,6 +37,20 @@ class _PlacePageState extends State<PlacePage> {
         appBar: AppBar(
           title: const Text("登録地点の内容"),
           actions: [
+            IconButton(
+              icon: const Icon(Icons.edit_location_alt),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaceEditPage(
+                      database: widget.database,
+                      initialPlace: widget.place,
+                    )
+                  )
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: (){

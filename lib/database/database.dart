@@ -36,8 +36,8 @@ class Reminds extends Table{
 }
 
 /* ---------- CRUD ---------- */
-Future insertPlace(AppDatabase db, PlacesCompanion place) {
-  return db.into(db.places).insert(place);
+Future upsertPlace(AppDatabase db, PlacesCompanion place) {
+  return db.into(db.places).insertOnConflictUpdate(place);
 }
 
 Future deletePlace(AppDatabase db, Place place) {
