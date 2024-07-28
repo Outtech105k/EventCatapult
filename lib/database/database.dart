@@ -102,8 +102,31 @@ class AppDatabase extends _$AppDatabase {
       }).toList();
     });
   }
-}
 
+  // 現在時刻から次に迎えるRemindを取得
+  Stream<RemindWithPlace?> watchNextUpcomingRemind() {
+    final now = DateTime.now();
+
+    final query = (select(reminds)..where((r) => r.deadline.isBiggerThanValue(now)))
+      ..orderBy([(r) => OrderingTerm(expression: r.deadline, mode: OrderingMode.asc)])
+      ..limit(1);
+
+    return query.join(
+      [
+        innerJoin(places, places.id.equalsExp(reminds.placeId)),
+      ],
+    ).watchSingleOrNull().map((row) {
+      if (row != null) {
+        return RemindWithPlace(
+          remind: row.readTable(reminds),
+          place: row.readTable(places),
+        );
+      } else {
+        return null;
+      }
+    });
+  }
+}
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
