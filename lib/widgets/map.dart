@@ -61,7 +61,7 @@ class _MapState extends State<Map> {
       children: [
         // 検索窓
         // TODO: 実装
-        if (widget.isEditMode)
+        if (widget.isEditMode && false)
           const Padding(
             padding: EdgeInsets.all(8.0),
             child: TextField(

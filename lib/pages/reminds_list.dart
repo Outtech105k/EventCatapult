@@ -4,6 +4,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'remind.dart';
 import 'remind_edit.dart';
@@ -23,23 +24,23 @@ class RemindsListPage extends StatefulWidget {
 }
 
 class _RemindsListPageState extends State<RemindsListPage> {
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
-        body: SeparatedStreamList<Remind>(
-          stream: watchAllReminds(widget.database),
-          itemBuilder: (context, remind) {
+        body: SeparatedStreamList<RemindWithPlace>(
+          stream: widget.database.watchAllRemindsWithPlaces(),
+          itemBuilder: (context, record) {
             return ListTile(
               // リマインド情報の表示
-              // TODO: 充実化
-              title: Text(remind.name),
-              subtitle: Text(remind.id.toString()),
+              title: Text(record.remind.name),
+              subtitle: Text("${DateFormat('yyyy-MM-dd HH:mm').format(record.remind.deadline)}\n${record.place.name}"),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RemindPage(database: widget.database, remind: remind)),
+                      builder: (context) => RemindPage(database: widget.database, remind: record.remind)),
                 );
               },
             );

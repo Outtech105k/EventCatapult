@@ -44,6 +44,10 @@ Future deletePlace(AppDatabase db, Place place) {
   return db.delete(db.places).delete(place);
 }
 
+Future<Place?> selectPlaceById(AppDatabase db, int id){
+  return (db.select(db.places)..where((u) => u.id.equals(id))).getSingleOrNull();
+}
+
 Stream<List<Place>> watchAllPlaces(AppDatabase db){
   return db.select(db.places).watch();
 }
@@ -60,14 +64,46 @@ Stream<List<Remind>> watchAllReminds(AppDatabase db){
   return db.select(db.reminds).watch();
 }
 
+/* ---------- JOINyy SCHEMAS ---------- */
+
+// リマインドと地点の結合結果を保持するクラス
+class RemindWithPlace {
+  final Remind remind;
+  final Place place;
+
+  RemindWithPlace({
+    required this.remind,
+    required this.place,
+  });
+}
+
 /* ---------- DB CREATION ---------- */
+
 @DriftDatabase(tables: [Reminds, Places])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
+
+  // 連結クエリ
+  Stream<List<RemindWithPlace>> watchAllRemindsWithPlaces() {
+    final query = (select(reminds)..orderBy([(t) => OrderingTerm(expression: t.deadline)]))
+        .join([
+      innerJoin(places, places.id.equalsExp(reminds.placeId)),
+    ]);
+
+    return query.watch().map((rows) {
+      return rows.map((row) {
+        return RemindWithPlace(
+          remind: row.readTable(reminds),
+          place: row.readTable(places),
+        );
+      }).toList();
+    });
+  }
 }
+
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {

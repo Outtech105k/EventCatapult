@@ -6,6 +6,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as d;
 
 import '../config.dart';
@@ -27,11 +28,11 @@ class RemindEditPage extends StatefulWidget {
 }
 
 class _RemindEditPageState extends State<RemindEditPage> {
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  Place? remindPlace;
-  DateTime? pickedDate;
-  TimeOfDay? pickedTime;
+  Place? _remindPlace;
+  DateTime? _pickedDate;
+  TimeOfDay? _pickedTime;
   late TextEditingController _nameController, _detailController;
 
   @override
@@ -40,6 +41,24 @@ class _RemindEditPageState extends State<RemindEditPage> {
 
     _nameController = TextEditingController(text: widget.initialRemind?.name ?? "");
     _detailController = TextEditingController(text: widget.initialRemind?.detail ?? "");
+
+    if (widget.initialRemind != null) {
+      selectPlaceById(widget.database, widget.initialRemind!.placeId).then((place) {
+        setState(() {
+          _remindPlace = place;
+        });
+      });
+
+      _pickedDate = DateTime(
+        widget.initialRemind!.deadline.year,
+        widget.initialRemind!.deadline.month,
+        widget.initialRemind!.deadline.day,
+      );
+      _pickedTime = TimeOfDay(
+        hour: widget.initialRemind!.deadline.hour,
+        minute: widget.initialRemind!.deadline.minute,
+      );
+    }
   }
 
   @override
@@ -52,18 +71,19 @@ class _RemindEditPageState extends State<RemindEditPage> {
               icon: const Icon(Icons.check),
               onPressed: () {
                 // 入力バリデーションを通過したら、データを登録する
-                if (formKey.currentState!.validate() && remindPlace!=null && pickedDate != null && pickedTime != null) {
+                if (_formKey.currentState!.validate() && _remindPlace!=null && _pickedDate != null && _pickedTime != null) {
                   upsertRemind(widget.database, RemindsCompanion(
                     id: widget.initialRemind == null
                         ? const d.Value.absent()
                         : d.Value(widget.initialRemind!.id),
                     name: d.Value(_nameController.text),
                     detail: d.Value(_detailController.text),
-                    placeId: d.Value(remindPlace!.id),
+                    placeId: d.Value(_remindPlace!.id),
                     deadline: d.Value(DateTime(
-                      pickedDate!.year, pickedDate!.month, pickedDate!.day, pickedTime!.hour, pickedTime!.minute
+                      _pickedDate!.year, _pickedDate!.month, _pickedDate!.day, _pickedTime!.hour, _pickedTime!.minute
                     ))
                   ));
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 }
               },
             )
@@ -72,7 +92,7 @@ class _RemindEditPageState extends State<RemindEditPage> {
 
         // TODO: リマインダーへの必要時刻の入力
         body: Form(
-          key: formKey,
+          key: _formKey,
           child: Column(
             children: [
 
@@ -128,7 +148,7 @@ class _RemindEditPageState extends State<RemindEditPage> {
                     child: Row(
                       children: [
                         const Icon(Icons.place),
-                        Text(remindPlace?.name ?? "未選択"),
+                        Text(_remindPlace?.name ?? "未選択"),
                       ],
                     ),
                     onPressed: () {
@@ -139,7 +159,7 @@ class _RemindEditPageState extends State<RemindEditPage> {
                                 database: widget.database,
                                 onPlaceSelected: (place) {
                                   setState(() {
-                                    remindPlace = place;
+                                    _remindPlace = place;
                                   });
                                 }
                             )
@@ -160,17 +180,22 @@ class _RemindEditPageState extends State<RemindEditPage> {
                           )
                       ),
                       onPressed: () async {
-                        DateTime? date = await showDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100));
+                        DateTime? date = await showDatePicker(
+                            context: context,
+                            initialDate: _pickedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2100)
+                        );
                         if (date!=null){
                           setState(() {
-                            pickedDate = date;
+                            _pickedDate = date;
                           });
                         }
                       },
                       child: Text(
-                        pickedDate != null
-                            ? "${pickedDate!.year}/${pickedDate!.month}/${pickedDate!.day}"
-                            : "????/??/??"
+                        _pickedDate != null
+                            ? DateFormat("yyyy-MM-dd").format(_pickedDate!)
+                            : "???? - ?? - ??"
                       ),
                     ),
 
@@ -181,14 +206,17 @@ class _RemindEditPageState extends State<RemindEditPage> {
                           )
                       ),
                       onPressed: () async {
-                        TimeOfDay? time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+                        TimeOfDay? time = await showTimePicker(
+                            context: context,
+                            initialTime: _pickedTime ?? TimeOfDay.now(),
+                        );
                         if (time != null){
                           setState(() {
-                            pickedTime = time;
+                            _pickedTime = time;
                           });
                         }
                       },
-                      child: Text(pickedTime?.format(context) ?? "?? : ??"),
+                      child: Text(_pickedTime?.format(context) ?? "?? : ??"),
                     ),
                   ],
                 ),
