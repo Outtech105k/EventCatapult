@@ -11,12 +11,12 @@ class Map extends StatefulWidget {
   const Map({
     super.key,
     this.initPosition,
-    required this.isPinEditable,
+    this.isEditMode = false,
     this.onMarkerPinned,
   });
 
   final LatLng? initPosition;
-  final bool isPinEditable;
+  final bool isEditMode;
   final Function(Marker)? onMarkerPinned;
 
   @override
@@ -59,20 +59,19 @@ class _MapState extends State<Map> {
         ? const Center(child: CircularProgressIndicator())
         : Column(
       children: [
-        /*
-            // 検索窓
-            // TODO: 実装
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "場所を検索",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.search),
-                ),
+        // 検索窓
+        // TODO: 実装
+        if (widget.isEditMode)
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "場所を検索",
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
               ),
             ),
-             */
+          ),
         Expanded(
           child: GoogleMap(
             initialCameraPosition: CameraPosition(
@@ -80,14 +79,14 @@ class _MapState extends State<Map> {
               zoom: 15.0,
             ),
             myLocationEnabled: true,
-            myLocationButtonEnabled: true,
+            myLocationButtonEnabled: widget.isEditMode,
             mapType: MapType.normal,
             zoomControlsEnabled: true,
             zoomGesturesEnabled: true,
 
             markers: _markers,
             onLongPress: (latLng) {
-              if (widget.isPinEditable) {
+              if (widget.isEditMode) {
                 setState(() {
                   _markers.remove(_pinnedMarker);
                   _pinnedMarker = Marker(

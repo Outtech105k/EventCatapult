@@ -48,16 +48,16 @@ Stream<List<Place>> watchAllPlaces(AppDatabase db){
   return db.select(db.places).watch();
 }
 
-Future insertRemind(AppDatabase db, RemindsCompanion remind) {
-  return db.into(db.reminds).insert(remind);
-}
-
-Stream<List<Remind>> watchAllReminds(AppDatabase db){
-  return db.select(db.reminds).watch();
+Future upsertRemind(AppDatabase db, RemindsCompanion remind) {
+  return db.into(db.reminds).insertOnConflictUpdate(remind);
 }
 
 Future deleteRemind(AppDatabase db, Remind remind) {
   return db.delete(db.reminds).delete(remind);
+}
+
+Stream<List<Remind>> watchAllReminds(AppDatabase db){
+  return db.select(db.reminds).watch();
 }
 
 /* ---------- DB CREATION ---------- */

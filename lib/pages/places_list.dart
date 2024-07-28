@@ -23,7 +23,6 @@ class PlacesListPage extends StatefulWidget {
   State<PlacesListPage> createState() => _PlacesListPageState();
 }
 
-// TODO: 充実化
 class _PlacesListPageState extends State<PlacesListPage> {
   @override
   Widget build(BuildContext context) {
