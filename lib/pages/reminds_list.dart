@@ -3,6 +3,8 @@
  * リマインド一覧を表示するページ
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -25,6 +27,35 @@ class RemindsListPage extends StatefulWidget {
 
 class _RemindsListPageState extends State<RemindsListPage> {
   RemindWithPlace? _nextRemind;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    return '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,36 +66,49 @@ class _RemindsListPageState extends State<RemindsListPage> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black
+                    ),
                   ),
-                ),
-                height: 100,
-                child: StreamBuilder<RemindWithPlace?>(
-                  stream: widget.database.watchNextUpcomingRemind(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                  height: 70,
+                  child: StreamBuilder<RemindWithPlace?>(
+                    stream: widget.database.watchNextUpcomingRemind(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                    if (snapshot.hasData && snapshot.data != null) {
-                      return Row(
-                        children: [
-                          Center(
-                            child: Text(snapshot.data!.remind.name),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Center(
-                        child: Text("ここには、直近イベントに関する詳細が表示されます"),
-                      );
-                    }
-                  },
-                )
+                      if (snapshot.hasData && snapshot.data != null) {
+                        final remind = snapshot.data!.remind;
+                        final now = DateTime.now();
+                        final deadline = remind.deadline;
+                        final remainingTime = deadline.difference(now);
+
+                        return Row(
+                          children: [
+                            Expanded(
+                                child: Column(
+                                  children: [
+                                    Text("次のイベント開始まで"),
+                                    Text(
+                                        _formatDuration(remainingTime),
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ],
+                              ),
+                            )
+                          ],
+                        );
+                      } else {
+                        return const Center(
+                          child: Text("ここには、直近イベントに関する詳細が表示されます"),
+                        );
+                      }
+                    },
+                  )
               ),
             ),
 

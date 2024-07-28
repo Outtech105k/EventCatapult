@@ -37,7 +37,7 @@ class ReminderApp extends StatelessWidget {
         fontFamily: 'NotoSansJP'
       ),
       home: HomePage(
-        title: 'GPS Reminder',
+        title: 'Event Catapult',
         database: database,
       ),
     );
