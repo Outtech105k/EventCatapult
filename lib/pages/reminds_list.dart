@@ -131,11 +131,13 @@ class _RemindsListPageState extends State<RemindsListPage> {
                                   departureRemainingTime != null
                                       ? _formatDuration(departureRemainingTime)
                                       : "--:--:--",
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                    color: departureRemainingTime==null || !_formatDuration(departureRemainingTime!).startsWith('-')
-                                      ? Colors.white
-                                        : Colors.red
+                                  style: departureRemainingTime==null || !_formatDuration(departureRemainingTime).startsWith('-')
+                                      ? const TextStyle(
+                                      fontSize: 30
+                                  )
+                                      : const TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.red,
                                   ),
                                 ),
                               ],
@@ -169,7 +171,7 @@ class _RemindsListPageState extends State<RemindsListPage> {
                         MaterialPageRoute(
                           builder: (context) => RemindPage(
                             database: widget.database,
-                            remind: record.remind,
+                            remindWithPlace: record,
                           ),
                         ),
                       );
