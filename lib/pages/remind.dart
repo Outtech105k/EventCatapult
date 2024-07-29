@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 
 import '../database/database.dart';
+import 'remind_edit.dart';
 
 class RemindPage extends StatefulWidget {
   const RemindPage({
@@ -35,12 +36,26 @@ class _RemindPageState extends State<RemindPage> {
           title: const Text("リマインドの内容"),
           actions: [
             IconButton(
+              icon: const Icon(Icons.edit_notifications),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RemindEditPage(
+                        database: widget.database,
+                        initialRemind: widget.remind,
+                      )
+                  )
+                );
+              },
+            ),
+            IconButton(
               icon: const Icon(Icons.delete),
               onPressed: (){
                 Navigator.pop(context);
                 deleteRemind(widget.database, widget.remind);
               },
-            )
+            ),
           ],
         ),
         body: Center(
@@ -52,7 +67,8 @@ class _RemindPageState extends State<RemindPage> {
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
-                )
+                ),
+                Text(widget.remind.detail)
               ],
             )
         )
