@@ -23,6 +23,7 @@ class ReminderApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'GPS Reminder',
       theme: ThemeData(
         colorSchemeSeed: Colors.blueAccent,
