@@ -52,8 +52,8 @@ class _HomePageState extends State<HomePage> {
           ),
           body: TabBarView(
             children: [
-              RemindsListPage(database: widget.database),
-              PlacesListPage(database: widget.database),
+              RemindsListPage(database: widget.database), // リマインダページ
+              PlacesListPage(database: widget.database), // 登録地点ページ
             ],
           ),
         )

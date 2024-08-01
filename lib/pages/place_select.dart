@@ -1,6 +1,7 @@
 /*
  * PlaceSelectPage
  * 登録地点リストを表示するページ
+ * TODO: 1項目選択システムの一般化
  */
 
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class PlaceSelectPage extends StatefulWidget {
   const PlaceSelectPage({
     super.key,
     required this.database,
-    required this.onPlaceSelected,
+    required this.onPlaceSelected, // 地点設定時コールバック
   });
 
   final AppDatabase database;
@@ -29,6 +30,7 @@ class _PlaceSelectPageState extends State<PlaceSelectPage> {
       appBar: AppBar(
         title: const Text("場所の選択"),
       ),
+
       body: SeparatedStreamList<Place>(
         stream: watchAllPlaces(widget.database),
         itemBuilder: (BuildContext context, Place place) {

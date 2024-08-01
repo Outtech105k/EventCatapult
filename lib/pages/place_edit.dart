@@ -15,7 +15,7 @@ class PlaceEditPage extends StatefulWidget {
   const PlaceEditPage({
     super.key,
     required this.database,
-    this.initialPlace,
+    this.initialPlace, // 登録地点の初期値(新規データならnull指定)
   });
 
   final AppDatabase database;
@@ -26,7 +26,7 @@ class PlaceEditPage extends StatefulWidget {
 }
 
 class _PlaceEditPageState extends State<PlaceEditPage> {
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(); // 入力バリデーション用キー
   LatLng? _position;
   late TextEditingController _nameController, _descriptionController;
 
@@ -34,6 +34,7 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
   void initState() {
     super.initState();
 
+    // `widget.initialPlace`が設定済みなら、フォーム・地図の初期情報にセット
     _nameController = TextEditingController(text: widget.initialPlace?.name ?? "");
     _descriptionController = TextEditingController(text: widget.initialPlace?.description ?? "");
     if (widget.initialPlace != null) {
@@ -50,21 +51,22 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () {
-                // 入力バリデーションを通過したら、データを登録する
+                // 入力バリデーションを通過したら、データをUPSERTする
+                // TODO: バリデーション違反時のポップアップ
                 if (formKey.currentState!.validate() && _position!=null) {
                   upsertPlace(widget.database, PlacesCompanion(
                     id: widget.initialPlace == null
-                        ? const d.Value.absent()
-                        : d.Value(widget.initialPlace!.id),
+                        ? const d.Value.absent()            // INSERT時
+                        : d.Value(widget.initialPlace!.id), // UPDATE時
                     name: d.Value(_nameController.text),
                     description: d.Value(_descriptionController.text),
                     longitude: d.Value(_position!.longitude),
                     latitude: d.Value(_position!.latitude),
                   ));
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).popUntil((route) => route.isFirst); // 地点リストまで戻す
                 }
               },
-            )
+            ),
           ],
         ),
 
@@ -72,6 +74,7 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
           key: formKey,
           child: Column(
             children: [
+              // 地点指定フォーム(GoogleMap)
               Expanded(
                   child: Map(
                     isEditMode: true,
@@ -81,19 +84,20 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                         _position = marker.position;
                       });
                     },
-                  )
+                  ),
               ),
 
               // 地点名入力フォーム
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
+                  controller: _nameController,
                   decoration: const InputDecoration(
                     labelText: "地点名(必須)",
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (value==null||value.isEmpty) {
+                    if (value==null || value.isEmpty) {
                       return "名前は必須です";
                     }
                     if (value.length>PlacesConfig.nameMaxLength){
@@ -101,7 +105,6 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                     }
                     return null;
                   },
-                  controller: _nameController,
                 ),
               ),
 
@@ -109,6 +112,7 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
+                  controller: _descriptionController,
                   decoration: const InputDecoration(
                     labelText: "説明",
                     border: OutlineInputBorder(),
@@ -121,10 +125,8 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                     }
                     return null;
                   },
-                  controller: _descriptionController,
                 ),
               ),
-
             ],
           ),
         )

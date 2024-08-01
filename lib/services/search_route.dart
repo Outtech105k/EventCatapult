@@ -4,7 +4,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 
-import 'location.dart';
 import '../secret.dart';
 
 class Polyline{
@@ -50,15 +49,15 @@ Future<List<Route>> searchDriveRouteFromCurrent(LatLng arrival, DateTime arriveT
     "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline",
   };
 
-  final _location = Location();
-  final _currentPosition = await _location.getLocation();
+  final location = Location();
+  final currentPosition = await location.getLocation();
 
   final body = jsonEncode({
     "origin": {
       "location": {
         "latLng": {
-          "latitude": _currentPosition.latitude,
-          "longitude": _currentPosition.longitude
+          "latitude": currentPosition.latitude,
+          "longitude": currentPosition.longitude
         }
       }
     },
