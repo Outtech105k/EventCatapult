@@ -3,11 +3,10 @@
  * リマインド情報を編集するページ
  */
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as d;
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../config.dart';
 import '../database/database.dart';
@@ -17,7 +16,7 @@ class RemindEditPage extends StatefulWidget {
   const RemindEditPage({
     super.key,
     required this.database,
-    this.initialRemind,
+    this.initialRemind, // 初期状態リマインド(新規作成時null)
   });
 
   final AppDatabase database;
@@ -28,7 +27,7 @@ class RemindEditPage extends StatefulWidget {
 }
 
 class _RemindEditPageState extends State<RemindEditPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); // フォームバリデーションキー
 
   Place? _remindPlace;
   DateTime? _pickedDate;
@@ -39,24 +38,29 @@ class _RemindEditPageState extends State<RemindEditPage> {
   void initState() {
     super.initState();
 
+    // リマインドの初期値があれば(編集モード)設定
     _nameController = TextEditingController(text: widget.initialRemind?.name ?? "");
     _detailController = TextEditingController(text: widget.initialRemind?.detail ?? "");
 
     if (widget.initialRemind != null) {
-      selectPlaceById(widget.database, widget.initialRemind!.placeId).then((place) {
+      Remind remind = widget.initialRemind!;
+
+      // 地点IDから座標をルックアップ
+      selectPlaceById(widget.database, remind.placeId).then((place) {
         setState(() {
           _remindPlace = place;
         });
       });
 
+      // 日時ピッカーへのセット
       _pickedDate = DateTime(
-        widget.initialRemind!.deadline.year,
-        widget.initialRemind!.deadline.month,
-        widget.initialRemind!.deadline.day,
+        remind.deadline.year,
+        remind.deadline.month,
+        remind.deadline.day,
       );
       _pickedTime = TimeOfDay(
-        hour: widget.initialRemind!.deadline.hour,
-        minute: widget.initialRemind!.deadline.minute,
+        hour: remind.deadline.hour,
+        minute: remind.deadline.minute,
       );
     }
   }
@@ -70,30 +74,31 @@ class _RemindEditPageState extends State<RemindEditPage> {
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () {
-                // 入力バリデーションを通過したら、データを登録する
+                // 入力バリデーションを通過したら、データをUPSERTする
+                // TODO: バリデーション違反時のメッセージボックス
                 if (_formKey.currentState!.validate() && _remindPlace!=null && _pickedDate != null && _pickedTime != null) {
                   upsertRemind(widget.database, RemindsCompanion(
-                    id: widget.initialRemind == null
-                        ? const d.Value.absent()
-                        : d.Value(widget.initialRemind!.id),
-                    name: d.Value(_nameController.text),
-                    detail: d.Value(_detailController.text),
-                    placeId: d.Value(_remindPlace!.id),
-                    deadline: d.Value(DateTime(
-                      _pickedDate!.year, _pickedDate!.month, _pickedDate!.day, _pickedTime!.hour, _pickedTime!.minute
-                    ))
+                      id: widget.initialRemind == null
+                          ? const d.Value.absent()             // INSERT時
+                          : d.Value(widget.initialRemind!.id), // UPDATE時
+                      name: d.Value(_nameController.text),
+                      detail: d.Value(_detailController.text),
+                      placeId: d.Value(_remindPlace!.id),
+                      deadline: d.Value(DateTime(
+                          _pickedDate!.year, _pickedDate!.month, _pickedDate!.day, _pickedTime!.hour, _pickedTime!.minute
+                      ))
                   ));
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).popUntil((route) => route.isFirst); // 登録後、初期画面まで戻る
                 }
               },
             )
           ],
         ),
 
-        // TODO: リマインダーへの必要時刻の入力
         body: Form(
           key: _formKey,
           child: Column(
+            // TODO: 全部Padding
             children: [
 
               // リマインド名入力フォーム
@@ -137,6 +142,8 @@ class _RemindEditPageState extends State<RemindEditPage> {
                 ),
               ),
 
+              // 登録地点選択ボタン
+              // TODO: 長押しして地点情報ページ
               Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
@@ -153,22 +160,24 @@ class _RemindEditPageState extends State<RemindEditPage> {
                     ),
                     onPressed: () {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PlaceSelectPage(
-                                database: widget.database,
-                                onPlaceSelected: (place) {
-                                  setState(() {
-                                    _remindPlace = place;
-                                  });
-                                }
-                            )
-                        )
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PlaceSelectPage(
+                                  database: widget.database,
+                                  onPlaceSelected: (place) {
+                                    setState(() {
+                                      _remindPlace = place;
+                                    });
+                                  }
+                              )
+                          )
                       );
                     },
                   )
               ),
 
+              // 日時指定ボタン
+              // TODO: 一般化して`../widgets/`に作成
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -181,6 +190,8 @@ class _RemindEditPageState extends State<RemindEditPage> {
                       ),
                       onPressed: () async {
                         DateTime? date = await showDatePicker(
+                          initialEntryMode: DatePickerEntryMode.calendarOnly,
+                            locale: const Locale("ja"),
                             context: context,
                             initialDate: _pickedDate,
                             firstDate: DateTime.now(),
@@ -193,9 +204,9 @@ class _RemindEditPageState extends State<RemindEditPage> {
                         }
                       },
                       child: Text(
-                        _pickedDate != null
-                            ? DateFormat("yyyy-MM-dd").format(_pickedDate!)
-                            : "???? - ?? - ??"
+                          _pickedDate != null
+                              ? DateFormat("yyyy-MM-dd").format(_pickedDate!)
+                              : "???? - ?? - ??"
                       ),
                     ),
 
@@ -207,8 +218,10 @@ class _RemindEditPageState extends State<RemindEditPage> {
                       ),
                       onPressed: () async {
                         TimeOfDay? time = await showTimePicker(
-                            context: context,
-                            initialTime: _pickedTime ?? TimeOfDay.now(),
+                          helpText: "時間を選択",
+                          initialEntryMode: TimePickerEntryMode.dialOnly,
+                          context: context,
+                          initialTime: _pickedTime ?? TimeOfDay.now(),
                         );
                         if (time != null){
                           setState(() {

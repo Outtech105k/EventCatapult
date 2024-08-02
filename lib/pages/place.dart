@@ -14,7 +14,7 @@ class PlacePage extends StatefulWidget {
   const PlacePage({
     super.key,
     required this.database,
-    required this.place,
+    required this.place, // 表示すべき地点情報
   });
 
   final AppDatabase database;
@@ -30,13 +30,13 @@ class _PlacePageState extends State<PlacePage> {
     super.initState();
   }
 
-  // TODO: 充実化
   @override
   Widget build(context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text("登録地点の内容"),
           actions: [
+            // 編集ボタン
             IconButton(
               icon: const Icon(Icons.edit_location_alt),
               onPressed: () {
@@ -51,6 +51,8 @@ class _PlacePageState extends State<PlacePage> {
                 );
               },
             ),
+
+            // 削除ボタン
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: (){
@@ -60,6 +62,7 @@ class _PlacePageState extends State<PlacePage> {
             )
           ],
         ),
+
         body: Center(
             child: Column(
               children: <Widget>[
@@ -72,6 +75,8 @@ class _PlacePageState extends State<PlacePage> {
                     ),
                   ),
                 ),
+
+                // 地点名
                 Text(
                     widget.place.name,
                   style: const TextStyle(
@@ -79,6 +84,8 @@ class _PlacePageState extends State<PlacePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+
+                // 地点情報
                 Text(widget.place.description)
               ],
             )
