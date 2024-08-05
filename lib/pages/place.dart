@@ -56,8 +56,31 @@ class _PlacePageState extends State<PlacePage> {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: (){
-                Navigator.pop(context);
-                deletePlace(widget.database, widget.place);
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("場所登録を削除"),
+                      content: Text("${widget.place.name}の登録を削除しますか？"),
+                      actions: [
+                        TextButton(
+                          child: const Text("キャンセル"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        TextButton(
+                          child: const Text("削除"),
+                          onPressed: () {
+                            Navigator.of(context).popUntil((route) => route.isFirst); // 地点リストまで戻す
+                            deletePlace(widget.database, widget.place);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("削除しました"))
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  }
+                );
               },
             )
           ],

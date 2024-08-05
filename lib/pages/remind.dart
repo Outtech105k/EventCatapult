@@ -30,7 +30,6 @@ class _RemindPageState extends State<RemindPage> {
     super.initState();
   }
 
-  // TODO: 充実化
   @override
   Widget build(context) {
     return Scaffold(
@@ -54,8 +53,31 @@ class _RemindPageState extends State<RemindPage> {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: (){
-                Navigator.pop(context);
-                deleteRemind(widget.database, widget.remindWithPlace.remind);
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("リマインドを削除"),
+                      content: Text("リマインド \"${widget.remindWithPlace.remind.name}\" を削除しますか？"),
+                      actions: [
+                        TextButton(
+                          child: const Text("キャンセル"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        TextButton(
+                          child: const Text("削除"),
+                          onPressed: () {
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            deleteRemind(widget.database, widget.remindWithPlace.remind);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("削除しました"))
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  }
+                );
               },
             ),
           ],

@@ -63,6 +63,9 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                     longitude: d.Value(_position!.longitude),
                     latitude: d.Value(_position!.latitude),
                   ));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(widget.initialPlace==null ? "登録しました" : "変更しました"))
+                  );
                   Navigator.of(context).popUntil((route) => route.isFirst); // 地点リストまで戻す
                 }
               },

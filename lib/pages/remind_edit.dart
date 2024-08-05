@@ -88,6 +88,9 @@ class _RemindEditPageState extends State<RemindEditPage> {
                           _pickedDate!.year, _pickedDate!.month, _pickedDate!.day, _pickedTime!.hour, _pickedTime!.minute
                       ))
                   ));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(widget.initialRemind==null ? "登録しました" : "変更しました"))
+                  );
                   Navigator.of(context).popUntil((route) => route.isFirst); // 登録後、初期画面まで戻る
                 }
               },
