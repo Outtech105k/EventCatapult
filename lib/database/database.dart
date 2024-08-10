@@ -31,8 +31,9 @@ class Reminds extends Table{
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: RemindsConfig.nameMaxLength)();
   TextColumn get detail => text().withLength(min: 0, max: RemindsConfig.detailMaxLength)();
-  IntColumn get placeId => integer().references(Places, #id)();
+  IntColumn get placeId => integer().references(Places, #id, onUpdate: KeyAction.restrict, onDelete: KeyAction.restrict)();
   DateTimeColumn get deadline => dateTime()();
+  BoolColumn get isFinished => boolean().withDefault(const Constant(false))();
 }
 
 /* ---------- CRUD ---------- */

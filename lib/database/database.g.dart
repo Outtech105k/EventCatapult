@@ -350,16 +350,27 @@ class $RemindsTable extends Reminds with TableInfo<$RemindsTable, Remind> {
       'place_id', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES places (id)'));
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES places (id) ON UPDATE RESTRICT ON DELETE RESTRICT'));
   static const VerificationMeta _deadlineMeta =
       const VerificationMeta('deadline');
   @override
   late final GeneratedColumn<DateTime> deadline = GeneratedColumn<DateTime>(
       'deadline', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _isFinishedMeta =
+      const VerificationMeta('isFinished');
   @override
-  List<GeneratedColumn> get $columns => [id, name, detail, placeId, deadline];
+  late final GeneratedColumn<bool> isFinished = GeneratedColumn<bool>(
+      'is_finished', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_finished" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, detail, placeId, deadline, isFinished];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -397,6 +408,12 @@ class $RemindsTable extends Reminds with TableInfo<$RemindsTable, Remind> {
     } else if (isInserting) {
       context.missing(_deadlineMeta);
     }
+    if (data.containsKey('is_finished')) {
+      context.handle(
+          _isFinishedMeta,
+          isFinished.isAcceptableOrUnknown(
+              data['is_finished']!, _isFinishedMeta));
+    }
     return context;
   }
 
@@ -416,6 +433,8 @@ class $RemindsTable extends Reminds with TableInfo<$RemindsTable, Remind> {
           .read(DriftSqlType.int, data['${effectivePrefix}place_id'])!,
       deadline: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}deadline'])!,
+      isFinished: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_finished'])!,
     );
   }
 
@@ -431,12 +450,14 @@ class Remind extends DataClass implements Insertable<Remind> {
   final String detail;
   final int placeId;
   final DateTime deadline;
+  final bool isFinished;
   const Remind(
       {required this.id,
       required this.name,
       required this.detail,
       required this.placeId,
-      required this.deadline});
+      required this.deadline,
+      required this.isFinished});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -445,6 +466,7 @@ class Remind extends DataClass implements Insertable<Remind> {
     map['detail'] = Variable<String>(detail);
     map['place_id'] = Variable<int>(placeId);
     map['deadline'] = Variable<DateTime>(deadline);
+    map['is_finished'] = Variable<bool>(isFinished);
     return map;
   }
 
@@ -455,6 +477,7 @@ class Remind extends DataClass implements Insertable<Remind> {
       detail: Value(detail),
       placeId: Value(placeId),
       deadline: Value(deadline),
+      isFinished: Value(isFinished),
     );
   }
 
@@ -467,6 +490,7 @@ class Remind extends DataClass implements Insertable<Remind> {
       detail: serializer.fromJson<String>(json['detail']),
       placeId: serializer.fromJson<int>(json['placeId']),
       deadline: serializer.fromJson<DateTime>(json['deadline']),
+      isFinished: serializer.fromJson<bool>(json['isFinished']),
     );
   }
   @override
@@ -478,6 +502,7 @@ class Remind extends DataClass implements Insertable<Remind> {
       'detail': serializer.toJson<String>(detail),
       'placeId': serializer.toJson<int>(placeId),
       'deadline': serializer.toJson<DateTime>(deadline),
+      'isFinished': serializer.toJson<bool>(isFinished),
     };
   }
 
@@ -486,13 +511,15 @@ class Remind extends DataClass implements Insertable<Remind> {
           String? name,
           String? detail,
           int? placeId,
-          DateTime? deadline}) =>
+          DateTime? deadline,
+          bool? isFinished}) =>
       Remind(
         id: id ?? this.id,
         name: name ?? this.name,
         detail: detail ?? this.detail,
         placeId: placeId ?? this.placeId,
         deadline: deadline ?? this.deadline,
+        isFinished: isFinished ?? this.isFinished,
       );
   Remind copyWithCompanion(RemindsCompanion data) {
     return Remind(
@@ -501,6 +528,8 @@ class Remind extends DataClass implements Insertable<Remind> {
       detail: data.detail.present ? data.detail.value : this.detail,
       placeId: data.placeId.present ? data.placeId.value : this.placeId,
       deadline: data.deadline.present ? data.deadline.value : this.deadline,
+      isFinished:
+          data.isFinished.present ? data.isFinished.value : this.isFinished,
     );
   }
 
@@ -511,13 +540,15 @@ class Remind extends DataClass implements Insertable<Remind> {
           ..write('name: $name, ')
           ..write('detail: $detail, ')
           ..write('placeId: $placeId, ')
-          ..write('deadline: $deadline')
+          ..write('deadline: $deadline, ')
+          ..write('isFinished: $isFinished')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, detail, placeId, deadline);
+  int get hashCode =>
+      Object.hash(id, name, detail, placeId, deadline, isFinished);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -526,7 +557,8 @@ class Remind extends DataClass implements Insertable<Remind> {
           other.name == this.name &&
           other.detail == this.detail &&
           other.placeId == this.placeId &&
-          other.deadline == this.deadline);
+          other.deadline == this.deadline &&
+          other.isFinished == this.isFinished);
 }
 
 class RemindsCompanion extends UpdateCompanion<Remind> {
@@ -535,12 +567,14 @@ class RemindsCompanion extends UpdateCompanion<Remind> {
   final Value<String> detail;
   final Value<int> placeId;
   final Value<DateTime> deadline;
+  final Value<bool> isFinished;
   const RemindsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.detail = const Value.absent(),
     this.placeId = const Value.absent(),
     this.deadline = const Value.absent(),
+    this.isFinished = const Value.absent(),
   });
   RemindsCompanion.insert({
     this.id = const Value.absent(),
@@ -548,6 +582,7 @@ class RemindsCompanion extends UpdateCompanion<Remind> {
     required String detail,
     required int placeId,
     required DateTime deadline,
+    this.isFinished = const Value.absent(),
   })  : name = Value(name),
         detail = Value(detail),
         placeId = Value(placeId),
@@ -558,6 +593,7 @@ class RemindsCompanion extends UpdateCompanion<Remind> {
     Expression<String>? detail,
     Expression<int>? placeId,
     Expression<DateTime>? deadline,
+    Expression<bool>? isFinished,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -565,6 +601,7 @@ class RemindsCompanion extends UpdateCompanion<Remind> {
       if (detail != null) 'detail': detail,
       if (placeId != null) 'place_id': placeId,
       if (deadline != null) 'deadline': deadline,
+      if (isFinished != null) 'is_finished': isFinished,
     });
   }
 
@@ -573,13 +610,15 @@ class RemindsCompanion extends UpdateCompanion<Remind> {
       Value<String>? name,
       Value<String>? detail,
       Value<int>? placeId,
-      Value<DateTime>? deadline}) {
+      Value<DateTime>? deadline,
+      Value<bool>? isFinished}) {
     return RemindsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       detail: detail ?? this.detail,
       placeId: placeId ?? this.placeId,
       deadline: deadline ?? this.deadline,
+      isFinished: isFinished ?? this.isFinished,
     );
   }
 
@@ -601,6 +640,9 @@ class RemindsCompanion extends UpdateCompanion<Remind> {
     if (deadline.present) {
       map['deadline'] = Variable<DateTime>(deadline.value);
     }
+    if (isFinished.present) {
+      map['is_finished'] = Variable<bool>(isFinished.value);
+    }
     return map;
   }
 
@@ -611,7 +653,8 @@ class RemindsCompanion extends UpdateCompanion<Remind> {
           ..write('name: $name, ')
           ..write('detail: $detail, ')
           ..write('placeId: $placeId, ')
-          ..write('deadline: $deadline')
+          ..write('deadline: $deadline, ')
+          ..write('isFinished: $isFinished')
           ..write(')'))
         .toString();
   }
@@ -768,6 +811,7 @@ typedef $$RemindsTableCreateCompanionBuilder = RemindsCompanion Function({
   required String detail,
   required int placeId,
   required DateTime deadline,
+  Value<bool> isFinished,
 });
 typedef $$RemindsTableUpdateCompanionBuilder = RemindsCompanion Function({
   Value<int> id,
@@ -775,6 +819,7 @@ typedef $$RemindsTableUpdateCompanionBuilder = RemindsCompanion Function({
   Value<String> detail,
   Value<int> placeId,
   Value<DateTime> deadline,
+  Value<bool> isFinished,
 });
 
 class $$RemindsTableTableManager extends RootTableManager<
@@ -799,6 +844,7 @@ class $$RemindsTableTableManager extends RootTableManager<
             Value<String> detail = const Value.absent(),
             Value<int> placeId = const Value.absent(),
             Value<DateTime> deadline = const Value.absent(),
+            Value<bool> isFinished = const Value.absent(),
           }) =>
               RemindsCompanion(
             id: id,
@@ -806,6 +852,7 @@ class $$RemindsTableTableManager extends RootTableManager<
             detail: detail,
             placeId: placeId,
             deadline: deadline,
+            isFinished: isFinished,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
@@ -813,6 +860,7 @@ class $$RemindsTableTableManager extends RootTableManager<
             required String detail,
             required int placeId,
             required DateTime deadline,
+            Value<bool> isFinished = const Value.absent(),
           }) =>
               RemindsCompanion.insert(
             id: id,
@@ -820,6 +868,7 @@ class $$RemindsTableTableManager extends RootTableManager<
             detail: detail,
             placeId: placeId,
             deadline: deadline,
+            isFinished: isFinished,
           ),
         ));
 }
@@ -844,6 +893,11 @@ class $$RemindsTableFilterComposer
 
   ColumnFilters<DateTime> get deadline => $state.composableBuilder(
       column: $state.table.deadline,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isFinished => $state.composableBuilder(
+      column: $state.table.isFinished,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -880,6 +934,11 @@ class $$RemindsTableOrderingComposer
 
   ColumnOrderings<DateTime> get deadline => $state.composableBuilder(
       column: $state.table.deadline,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isFinished => $state.composableBuilder(
+      column: $state.table.isFinished,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
