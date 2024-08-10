@@ -98,147 +98,149 @@ class _RemindEditPageState extends State<RemindEditPage> {
           ],
         ),
 
-        body: Form(
-          key: _formKey,
-          child: Column(
-            // TODO: 全部Padding
-            children: [
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              // TODO: 全部Padding
+              children: [
 
-              // リマインド名入力フォーム
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: "リマインド名(必須)",
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value==null||value.isEmpty) {
-                      return "名前は必須です";
-                    }
-                    if (value.length>RemindsConfig.nameMaxLength){
-                      return "名前は${RemindsConfig.nameMaxLength}文字以内にしてください";
-                    }
-                    return null;
-                  },
-                  controller: _nameController,
-                ),
-              ),
-
-              // 詳細情報入力フォーム(空白可)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: "詳細情報",
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 5,
-                  keyboardType: TextInputType.multiline,
-                  validator: (value) {
-                    if (value != null && value.length > RemindsConfig.detailMaxLength){
-                      return "詳細情報は${RemindsConfig.detailMaxLength}文字以内にしてください";
-                    }
-                    return null;
-                  },
-                  controller: _detailController,
-                ),
-              ),
-
-              // 登録地点選択ボタン
-              // TODO: 長押しして地点情報ページ
-              Padding(
+                // リマインド名入力フォーム
+                Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "リマインド名(必須)",
+                      border: OutlineInputBorder(),
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.place),
-                        Text(_remindPlace?.name ?? "未選択"),
-                      ],
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PlaceSelectPage(
-                                  database: widget.database,
-                                  onPlaceSelected: (place) {
-                                    setState(() {
-                                      _remindPlace = place;
-                                    });
-                                  }
-                              )
-                          )
-                      );
+                    validator: (value) {
+                      if (value==null||value.isEmpty) {
+                        return "名前は必須です";
+                      }
+                      if (value.length>RemindsConfig.nameMaxLength){
+                        return "名前は${RemindsConfig.nameMaxLength}文字以内にしてください";
+                      }
+                      return null;
                     },
-                  )
-              ),
-
-              // 日時指定ボタン
-              // TODO: 一般化して`../widgets/`に作成
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)
-                          )
-                      ),
-                      onPressed: () async {
-                        DateTime? date = await showDatePicker(
-                          initialEntryMode: DatePickerEntryMode.calendarOnly,
-                            locale: const Locale("ja"),
-                            context: context,
-                            initialDate: _pickedDate,
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2100)
-                        );
-                        if (date!=null){
-                          setState(() {
-                            _pickedDate = date;
-                          });
-                        }
-                      },
-                      child: Text(
-                          _pickedDate != null
-                              ? DateFormat("yyyy-MM-dd").format(_pickedDate!)
-                              : "???? - ?? - ??"
-                      ),
-                    ),
-
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)
-                          )
-                      ),
-                      onPressed: () async {
-                        TimeOfDay? time = await showTimePicker(
-                          helpText: "時間を選択",
-                          initialEntryMode: TimePickerEntryMode.dialOnly,
-                          context: context,
-                          initialTime: _pickedTime ?? TimeOfDay.now(),
-                        );
-                        if (time != null){
-                          setState(() {
-                            _pickedTime = time;
-                          });
-                        }
-                      },
-                      child: Text(_pickedTime?.format(context) ?? "?? : ??"),
-                    ),
-                  ],
+                    controller: _nameController,
+                  ),
                 ),
-              )
 
-            ],
+                // 詳細情報入力フォーム(空白可)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "詳細情報",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      if (value != null && value.length > RemindsConfig.detailMaxLength){
+                        return "詳細情報は${RemindsConfig.detailMaxLength}文字以内にしてください";
+                      }
+                      return null;
+                    },
+                    controller: _detailController,
+                  ),
+                ),
+
+                // 登録地点選択ボタン
+                // TODO: 長押しして地点情報ページ
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.place),
+                          Text(_remindPlace?.name ?? "未選択"),
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PlaceSelectPage(
+                                    database: widget.database,
+                                    onPlaceSelected: (place) {
+                                      setState(() {
+                                        _remindPlace = place;
+                                      });
+                                    }
+                                )
+                            )
+                        );
+                      },
+                    )
+                ),
+
+                // 日時指定ボタン
+                // TODO: 一般化して`../widgets/`に作成
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)
+                            )
+                        ),
+                        onPressed: () async {
+                          DateTime? date = await showDatePicker(
+                              initialEntryMode: DatePickerEntryMode.calendarOnly,
+                              locale: const Locale("ja"),
+                              context: context,
+                              initialDate: _pickedDate,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2100)
+                          );
+                          if (date!=null){
+                            setState(() {
+                              _pickedDate = date;
+                            });
+                          }
+                        },
+                        child: Text(
+                            _pickedDate != null
+                                ? DateFormat("yyyy-MM-dd").format(_pickedDate!)
+                                : "???? - ?? - ??"
+                        ),
+                      ),
+
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)
+                            )
+                        ),
+                        onPressed: () async {
+                          TimeOfDay? time = await showTimePicker(
+                            helpText: "時間を選択",
+                            initialEntryMode: TimePickerEntryMode.dialOnly,
+                            context: context,
+                            initialTime: _pickedTime ?? TimeOfDay.now(),
+                          );
+                          if (time != null){
+                            setState(() {
+                              _pickedTime = time;
+                            });
+                          }
+                        },
+                        child: Text(_pickedTime?.format(context) ?? "?? : ??"),
+                      ),
+                    ],
+                  ),
+                )
+
+              ],
+            ),
           ),
         )
     );

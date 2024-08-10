@@ -27,12 +27,9 @@ class PlacePage extends StatefulWidget {
 
 class _PlacePageState extends State<PlacePage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(context) {
+    final Size screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
         appBar: AppBar(
           title: const Text("登録地点の内容"),
@@ -80,11 +77,11 @@ class _PlacePageState extends State<PlacePage> {
           ],
         ),
 
-        body: Center(
+        body: SingleChildScrollView(
             child: Column(
               children: <Widget>[
                 SizedBox(
-                  height: 300,
+                  height: screenSize.height*(1/3),
                   child: Map(
                     initPosition: LatLng(
                       widget.place.latitude,

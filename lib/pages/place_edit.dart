@@ -44,6 +44,8 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
         appBar: AppBar(
           title: const Text("場所の設定"),
@@ -64,7 +66,7 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                     latitude: d.Value(_position!.latitude),
                   ));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(widget.initialPlace==null ? "登録しました" : "変更しました"))
+                      SnackBar(content: Text(widget.initialPlace==null ? "登録しました" : "変更しました"))
                   );
                   Navigator.of(context).popUntil((route) => route.isFirst); // 地点リストまで戻す
                 }
@@ -73,12 +75,14 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
           ],
         ),
 
-        body: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              // 地点指定フォーム(GoogleMap)
-              Expanded(
+        body: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                // 地点指定フォーム(GoogleMap)
+                SizedBox(
+                  height: screenSize.height/2,
                   child: Map(
                     isEditMode: true,
                     initPosition: _position,
@@ -88,49 +92,50 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                       });
                     },
                   ),
-              ),
-
-              // 地点名入力フォーム
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: "地点名(必須)",
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value==null || value.isEmpty) {
-                      return "名前は必須です";
-                    }
-                    if (value.length>PlacesConfig.nameMaxLength){
-                      return "名前は${PlacesConfig.nameMaxLength}文字以内にしてください";
-                    }
-                    return null;
-                  },
                 ),
-              ),
 
-              // 説明入力フォーム(空白可)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: "説明",
-                    border: OutlineInputBorder(),
+                // 地点名入力フォーム
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: "地点名(必須)",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value==null || value.isEmpty) {
+                        return "名前は必須です";
+                      }
+                      if (value.length>PlacesConfig.nameMaxLength){
+                        return "名前は${PlacesConfig.nameMaxLength}文字以内にしてください";
+                      }
+                      return null;
+                    },
                   ),
-                  maxLines: 5,
-                  keyboardType: TextInputType.multiline,
-                  validator: (value) {
-                    if (value != null && value.length > PlacesConfig.descriptionMaxLength){
-                      return "説明は${PlacesConfig.descriptionMaxLength}文字以内にしてください";
-                    }
-                    return null;
-                  },
                 ),
-              ),
-            ],
+
+                // 説明入力フォーム(空白可)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: "説明",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      if (value != null && value.length > PlacesConfig.descriptionMaxLength){
+                        return "説明は${PlacesConfig.descriptionMaxLength}文字以内にしてください";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         )
     );
