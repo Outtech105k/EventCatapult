@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/database.dart';
 import '../services/location.dart';
@@ -16,10 +17,12 @@ class HomePage extends StatefulWidget {
   const HomePage({
     super.key,
     required this.title,   // アプリタイトル
+    required this.isFirstLaunch, // 初回起動か否か
     required this.database // DBハンドラ
   });
 
   final String title;
+  final bool isFirstLaunch;
   final AppDatabase database;
 
   @override
@@ -28,8 +31,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    if (widget.isFirstLaunch) {
+      firstLaunchDialog();
+    }
+  }
 
+  Future<void> firstLaunchDialog() async {
+
+    // 初回起動フラグを変更
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("is_first_launch", false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
         length: 2,
         child: Scaffold(

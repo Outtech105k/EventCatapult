@@ -6,20 +6,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gps_reminder/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'database/database.dart';
 import 'pages/home.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  // 初回起動時、'is_first_launch'が存在しないのでisFirstLaunchはtrueになる
+  bool isFirstLaunch = prefs.getBool('is_first_launch') ?? true;
+
   final database = AppDatabase();
-  runApp(ReminderApp(database: database));
+
+  runApp(ReminderApp(
+    isFirstLaunch: isFirstLaunch,
+    database: database,
+  ));
 }
 
 class ReminderApp extends StatelessWidget {
   const ReminderApp({
     super.key,
+    required this.isFirstLaunch,
     required this.database,
   });
 
+  final bool isFirstLaunch;
   final AppDatabase database;
 
   @override
@@ -41,6 +53,7 @@ class ReminderApp extends StatelessWidget {
         ),
         home: HomePage(
           title: AppConfig.appName,
+          isFirstLaunch: isFirstLaunch,
           database: database,
         ),
 
