@@ -22,7 +22,11 @@ Future<bool> checkLocationPermissions() async {
 }
 
 class GetLocation {
-  static Future<LocationData> getPosition(Location location) async {
+  static Future<LocationData?> getPosition(Location location) async {
+    if(!await Permission.location.status.isGranted) {
+      return null;
+    }
+
     final currentLocation = await location.getLocation();
     return currentLocation;
   }

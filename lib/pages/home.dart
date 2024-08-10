@@ -3,8 +3,13 @@
  * アプリのルートページ, ここにはTabしか配置しない
  */
 
+import 'dart:async';
+
+import 'package:after_layout/after_layout.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/database.dart';
@@ -29,16 +34,30 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage>{
   @override
-  void initState() {
-    super.initState();
-    if (widget.isFirstLaunch) {
-      firstLaunchDialog();
-    }
+  void afterFirstLayout(BuildContext context) {
+    firstLaunchDialog();
   }
 
   Future<void> firstLaunchDialog() async {
+    if (!widget.isFirstLaunch) {
+      return;
+    }
+
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("ようこそ"),
+            content: const Text("アプリのメイン機能を利用するには、次の画面でGPSの常時使用を許可してください。"),
+            actions: [TextButton(onPressed: Navigator.of(context).pop, child: const Text("続行"))],
+          );
+        }
+    );
+
+    await Permission.location.request();
+    await Permission.locationAlways.request();
 
     // 初回起動フラグを変更
     SharedPreferences prefs = await SharedPreferences.getInstance();

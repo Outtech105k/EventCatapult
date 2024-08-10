@@ -53,7 +53,7 @@ class _MapState extends State<Map> {
       setState(() {
         _initPosition = LatLng(widget.initPosition!.latitude, widget.initPosition!.longitude);
         _pinnedMarker = Marker(
-          markerId: MarkerId(_initPosition.toString()), // TODO: 適切な一時的IDを設定
+          markerId: const MarkerId("!initPin"), // '!'で始まるMarkerはアプリ用に割り当てられる
           position: _initPosition!,
         );
         _markers.add(_pinnedMarker!);

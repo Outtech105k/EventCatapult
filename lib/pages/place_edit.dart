@@ -110,6 +110,9 @@ class _PlaceEditPageState extends State<PlaceEditPage> {
                       if (value.length>PlacesConfig.nameMaxLength){
                         return "名前は${PlacesConfig.nameMaxLength}文字以内にしてください";
                       }
+                      if (value.substring(0, 1)=='!') {
+                        return "名前を'!'で始めることはできません";
+                      }
                       return null;
                     },
                   ),
