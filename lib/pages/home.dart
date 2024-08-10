@@ -29,13 +29,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    // 描画完了後、権限の許可をチェック(許可されていなければ許可させる)
-    // TODO: 権限要求ページへの遷移
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if(!await checkLocationPermissions()){
-        SystemNavigator.pop();
-      }
-    });
 
     return DefaultTabController(
         length: 2,

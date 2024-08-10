@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:gps_reminder/config.dart';
 import 'database/database.dart';
 import 'pages/home.dart';
 
@@ -25,7 +26,7 @@ class ReminderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'GPS Reminder',
+        title: AppConfig.appName,
         theme: ThemeData(
           colorSchemeSeed: Colors.blueAccent,
           useMaterial3: true,
@@ -39,7 +40,7 @@ class ReminderApp extends StatelessWidget {
             fontFamily: 'NotoSansJP'
         ),
         home: HomePage(
-          title: 'Event Catapult',
+          title: AppConfig.appName,
           database: database,
         ),
 

@@ -60,8 +60,11 @@ class _PlacePageState extends State<PlacePage> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text("場所登録を削除"),
-                      content: Text("${widget.place.name}の登録を削除しますか？"),
+                      title: const Row(children: [
+                        Icon(Icons.warning),
+                        Text("場所登録を削除"),
+                      ]),
+                      content: Text("\"${widget.place.name}\" の登録を削除しますか？"),
                       actions: [
                         TextButton(
                           child: const Text("キャンセル"),
