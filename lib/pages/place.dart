@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gps_reminder/widgets/cancelableDialog.dart';
 import 'place_edit.dart';
 
 import '../widgets/map.dart';
@@ -59,28 +60,18 @@ class _PlacePageState extends State<PlacePage> {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return AlertDialog(
-                      title: const Row(children: [
-                        Icon(Icons.warning),
-                        Text("場所登録を削除"),
-                      ]),
-                      content: Text("\"${widget.place.name}\" の登録を削除しますか？"),
-                      actions: [
-                        TextButton(
-                          child: const Text("キャンセル"),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        TextButton(
-                          child: const Text("削除"),
-                          onPressed: () {
-                            Navigator.of(context).popUntil((route) => route.isFirst); // 地点リストまで戻す
-                            deletePlace(widget.database, widget.place);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("削除しました"))
-                            );
-                          },
-                        ),
-                      ],
+                    return CancelableDialog(
+                      icon: Icons.warning,
+                      titleText: "場所登録を削除",
+                      bodyText: "\"${widget.place.name}\" の登録を削除しますか？",
+                      confirmText: "削除",
+                      onPressedConfirm: () {
+                        Navigator.pop(context);
+                        deletePlace(widget.database, widget.place);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("削除しました"))
+                        );
+                      },
                     );
                   }
                 );

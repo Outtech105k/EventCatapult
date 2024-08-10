@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gps_reminder/widgets/cancelableDialog.dart';
 
 import '../database/database.dart';
 import 'remind_edit.dart';
@@ -56,25 +57,18 @@ class _RemindPageState extends State<RemindPage> {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return AlertDialog(
-                      title: const Text("リマインドを削除"),
-                      content: Text("リマインド \"${widget.remindWithPlace.remind.name}\" を削除しますか？"),
-                      actions: [
-                        TextButton(
-                          child: const Text("キャンセル"),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        TextButton(
-                          child: const Text("削除"),
-                          onPressed: () {
-                            Navigator.of(context).popUntil((route) => route.isFirst);
-                            deleteRemind(widget.database, widget.remindWithPlace.remind);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("削除しました"))
-                            );
-                          },
-                        ),
-                      ],
+                    return CancelableDialog(
+                      icon: Icons.warning,
+                      titleText: "リマインドを削除",
+                      bodyText: "リマインド \"${widget.remindWithPlace.remind.name}\" を削除しますか？",
+                      confirmText: "削除",
+                      onPressedConfirm: () {
+                        Navigator.pop(context);
+                        deleteRemind(widget.database, widget.remindWithPlace.remind);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("削除しました"))
+                        );
+                      },
                     );
                   }
                 );
