@@ -5,7 +5,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gps_reminder/config.dart';
 import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Map extends StatefulWidget {
   const Map({
@@ -37,10 +39,16 @@ class _MapState extends State<Map> {
 
   Future<void> _initMapPosition() async {
     if (widget.initPosition == null) {
-      var locationData = await _location.getLocation();
-      setState(() {
-        _initPosition = LatLng(locationData.latitude!, locationData.longitude!);
-      });
+      if (await Permission.location.status.isGranted) {
+        var locationData = await _location.getLocation();
+        setState(() {
+          _initPosition = LatLng(locationData.latitude!, locationData.longitude!);
+        });
+      } else {
+        setState(() {
+          _initPosition = PlacesConfig.initPositionWithoutGPS;
+        });
+      }
     } else {
       setState(() {
         _initPosition = LatLng(widget.initPosition!.latitude, widget.initPosition!.longitude);
